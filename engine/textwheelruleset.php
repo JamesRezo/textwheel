@@ -18,6 +18,8 @@
  *
  */
 
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
 require_once dirname(__FILE__)."/textwheelrule.php";
 
 abstract class TextWheelDataSet {
@@ -29,10 +31,10 @@ abstract class TextWheelDataSet {
 	 * path find method
 	 *
 	 * @param string $file
-	 * @param string $default_path
+	 * @param string $path
 	 * @return string
 	 */
-	protected function findFile(&$file, $path=''){
+	protected function findFile(&$file, $path = ''){
 		static $default_path;
 
 		// absolute file path ?
@@ -55,18 +57,19 @@ abstract class TextWheelDataSet {
 	/**
 	 * Load a yaml file describing data
 	 * @param string $file
+	 * @param string $default_path
 	 * @return array
 	 */
-	protected function loadFile(&$file, $default_path='') {
+	protected function loadFile(&$file, $default_path = '') {
 		if (!preg_match(',[.]yaml$,i',$file)
 		  // external rules
 		  OR !$file = $this->findFile($file,$default_path))
 			return array();
 
-		define('_YAML_EVAL_PHP', false);
+		defined('_YAML_EVAL_PHP') || define('_YAML_EVAL_PHP', false);
 		if (!function_exists('yaml_decode')) {
 			if (function_exists('include_spip'))
-				include_spip('inc/yaml');
+				include_spip('inc/yaml-mini');
 			else
 				require_once dirname(__FILE__).'/../inc/yaml.php';
 		}
@@ -94,9 +97,10 @@ class TextWheelRuleSet extends TextWheelDataSet {
 	/**
 	 * Constructor
 	 *
-	 * @param array/string $ruleset
+	 * @param array|string $ruleset
+	 * @param string $filepath
 	 */
-	public function TextWheelRuleSet($ruleset = array(), $filepath='') {
+	public function __construct($ruleset = array(), $filepath = '') {
 		if ($ruleset)
 			$this->addRules($ruleset, $filepath);
 	}
@@ -110,7 +114,7 @@ class TextWheelRuleSet extends TextWheelDataSet {
 	 * @param string $class
 	 * @return class
 	 */
-	public static function &loader($ruleset, $callback='', $class='TextWheelRuleSet'){
+	public static function &loader($ruleset, $callback = '', $class = 'TextWheelRuleSet'){
 
 		$ruleset = new $class($ruleset);
 		if ($callback)
@@ -160,9 +164,10 @@ class TextWheelRuleSet extends TextWheelDataSet {
 	 * - a string filename
 	 * - an array of string filename
 	 *
-	 * @param array/string $rules
+	 * @param array|string $rules
+	 * @param string $filepath
 	 */
-	public function addRules($rules, $filepath='') {
+	public function addRules($rules, $filepath = '') {
 		// rules can be an array of filename
 		if (is_array($rules) AND is_string(reset($rules))) {
 			foreach($rules as $i=>$filename)

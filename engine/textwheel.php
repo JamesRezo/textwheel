@@ -18,17 +18,21 @@
  *
  */
 
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
 require_once dirname(__FILE__)."/textwheelruleset.php";
 
 class TextWheel {
 	protected $ruleset;
 	protected static $subwheel = array();
 
+	protected $compiled = array();
+
 	/**
 	 * Constructor
 	 * @param TextWheelRuleSet $ruleset
 	 */
-	public function TextWheel($ruleset = null) {
+	public function __construct($ruleset = null) {
 		$this->setRuleSet($ruleset);
 	}
 
@@ -38,7 +42,7 @@ class TextWheel {
 	 */
 	public function setRuleSet($ruleset){
 		if (!is_object($ruleset))
-			$ruleset = new TextWheelRuleSet ();
+			$ruleset = new TextWheelRuleSet ($ruleset);
 		$this->ruleset = $ruleset;
 	}
 
@@ -64,34 +68,64 @@ class TextWheel {
 		return addcslashes(var_export($x, true), "\n\r\t");
 	}
 
-	public function compile() {
+	public function compile($b = null) {
 		$rules = & $this->ruleset->getRules();
 
 		## apply each in order
+		$pre = array();
 		$comp = array();
 
 		foreach ($rules as $name => $rule)
 		{
+			$rule->name = $name;
 			$this->initRule($rule);
-			$r = "/* $name */\n";
+			if (is_string($rule->replace)
+			AND isset($this->compiled[$rule->replace])
+			AND $fun = $this->compiled[$rule->replace]) {
+				$pre[] = "\n###\n## $name\n###\n" . $fun;
+				preg_match(',function (\w+), ', $fun, $r);
+				$rule->compilereplace = $r[1]; # ne pas modifier ->replace sinon on casse l'execution...
+			}
+
+			$r = "\t/* $name */\n";
 
 			if ($rule->require)
-				$r .= 'require_once '.TextWheel::export($rule->require).';'."\n";
+				$r .= "\t".'require_once '.TextWheel::export($rule->require).';'."\n";
 			if ($rule->if_str)
-				$r .= 'if_str('.TextWheel::export($rule->if_str).', $t)'."\n";
+				$r .= "\t".'if (strpos($t, '.TextWheel::export($rule->if_str).') === false)'."\n";
 			if ($rule->if_stri)
-				$r .= 'if_stri('.TextWheel::export($rule->if_stri).', $t)'."\n";
+				$r .= "\t".'if (stripos($t, '.TextWheel::export($rule->if_stri).') === false)'."\n";
 			if ($rule->if_match)
-				$r .= 'if_match('.TextWheel::export($rule->if_match).', $t)'."\n";
+				$r .= "\t".'if (preg_match('.TextWheel::export($rule->if_match).', $t))'."\n";
 
 			if ($rule->func_replace !== 'replace_identity') {
 				$fun = 'TextWheel::'.$rule->func_replace;
-				$r .= '$t = '.$fun.'('.TextWheel::export($rule->match).', '.TextWheel::export($rule->replace).', $t);'."\n";
+				switch($fun) {
+					case 'TextWheel::replace_all_cb':
+						$fun = $rule->replace; # trim()...
+						break;
+					case 'TextWheel::replace_preg':
+						$fun = 'preg_replace';
+						break;
+					case 'TextWheel::replace_str':
+						$fun = 'str_replace';
+						break;
+					case 'TextWheel::replace_preg_cb':
+						$fun = 'preg_replace_callback';
+						break;
+					default:
+						break;
+				}
+				$r .= "\t".'$t = '.$fun.'('.TextWheel::export($rule->match).', '.TextWheel::export($rule->replace).', $t);'."\n";
 			}
 
 			$comp[] = $r;
 		}
-		return join ("\n", $comp);
+		$code = join ("\n", $comp);
+		$code = 'function '.$b.'($t) {' . "\n". $code . "\n\treturn \$t;\n}\n\n";
+		$code = join ("\n", $pre) . $code;
+
+		return $code;
 	}
 
 
@@ -112,7 +146,8 @@ class TextWheel {
 	 * @return TextWheel
 	 */
 	protected function &createSubWheel(&$rules){
-		return new TextWheel($rules);
+		$tw = new TextWheel($rules);
+		return $tw;
 	}
 
 	/**
@@ -124,19 +159,22 @@ class TextWheel {
 	 */
 	protected function initRule(&$rule){
 		# language specific
-		if ($rule->require)
+		if ($rule->require){
 			require_once $rule->require;
+		}
 
 		# optimization: strpos or stripos?
-		if (isset($rule->strpos)) {
+		if (isset($rule->if_str)) {
 			if (strtolower($rule->if_str) !== strtoupper($rule->if_str)) {
 				$rule->if_stri = $rule->if_str;
-				unset($rule->if_str);
+				$rule->if_str = null;
 			}
 		}
 
 		if ($rule->create_replace){
+			$compile = $rule->replace.'($t)';
 			$rule->replace = create_function('$m', $rule->replace);
+			$this->compiled[$rule->replace] = $compile;
 			$rule->create_replace = false;
 			$rule->is_callback = true;
 		}
@@ -148,6 +186,9 @@ class TextWheel {
 				$var = '$m';
 			$code = 'return TextWheel::getSubWheel('.$n.')->text('.$var.');';
 			$rule->replace = create_function('$m', $code);
+			$cname = 'compiled_'.str_replace('-','_', $rule->name);
+			$compile = TextWheel::getSubWheel($n)->compile($cname);
+			$this->compiled[$rule->replace] = $compile;
 			$rule->is_wheel = false;
 			$rule->is_callback = true;
 		}
@@ -204,7 +245,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected function apply(&$rule, &$t, &$count=null) {
+	protected function apply(&$rule, &$t, &$count = null) {
 
 		if ($rule->disabled)
 			return;
@@ -212,17 +253,18 @@ class TextWheel {
 		if (isset($rule->if_chars) AND (strpbrk($t, $rule->if_chars) === false))
 			return;
 
-		if (isset($rule->if_str) AND strpos($t, $rule->if_str) === false)
-			return;
-
-		if (isset($rule->if_stri) AND stripos($t, $rule->if_str) === false)
-			return;
-
 		if (isset($rule->if_match) AND !preg_match($rule->if_match, $t))
 			return;
 
+		// init rule before testing if_str / if_stri as they are optimized by initRule
 		if (!isset($rule->func_replace))
 			$this->initRule($rule);
+
+		if (isset($rule->if_str) AND strpos($t, $rule->if_str) === false)
+			return;
+
+		if (isset($rule->if_stri) AND stripos($t, $rule->if_stri) === false)
+			return;
 
 		$func = $rule->func_replace;
 		TextWheel::$func($rule->match,$rule->replace,$t,$count);
@@ -238,7 +280,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_identity(&$match,&$replace,&$t,&$count){
+	protected static function replace_identity(&$match, &$replace, &$t, &$count){
 	}
 
 	/**
@@ -248,7 +290,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_all(&$match,&$replace,&$t,&$count){
+	protected static function replace_all(&$match, &$replace, &$t, &$count){
 		# special case: replace $0 with $t
 		#   replace: "A$0B" will surround the string with A..B
 		#   replace: "$0$0" will repeat the string
@@ -265,7 +307,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_all_cb(&$match,&$replace,&$t,&$count){
+	protected static function replace_all_cb(&$match, &$replace, &$t, &$count){
 		$t = $replace($t);
 	}
 
@@ -277,7 +319,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_str(&$match,&$replace,&$t,&$count){
+	protected static function replace_str(&$match, &$replace, &$t, &$count){
 		if (!is_string($match) OR strpos($t,$match)!==FALSE)
 			$t = str_replace($match, $replace, $t, $count);
 	}
@@ -290,7 +332,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_strtr(&$match,&$replace,&$t,&$count){
+	protected static function replace_strtr(&$match, &$replace, &$t, &$count){
 		$t = strtr( $t, $match, $replace);
 	}
 
@@ -302,7 +344,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_str_cb(&$match,&$replace,&$t,&$count){
+	protected static function replace_str_cb(&$match, &$replace, &$t, &$count){
 		if (strpos($t,$match)!==FALSE)
 			if (count($b = explode($match, $t)) > 1)
 				$t = join($replace($match), $b);
@@ -315,9 +357,13 @@ class TextWheel {
 	 * @param mixed $replace
 	 * @param string $t
 	 * @param int $count
+	 * @throws Exception
 	 */
-	protected static function replace_preg(&$match,&$replace,&$t,&$count){
+	protected static function replace_preg(&$match, &$replace, &$t, &$count){
 		$t = preg_replace($match, $replace, $t, -1, $count);
+		if (is_null($t)){
+			throw new Exception('Memory error, increase pcre.backtrack_limit in php.ini');
+		}
 	}
 
 	/**
@@ -326,9 +372,13 @@ class TextWheel {
 	 * @param mixed $replace
 	 * @param string $t
 	 * @param int $count
+	 * @throws Exception
 	 */
-	protected static function replace_preg_cb(&$match,&$replace,&$t,&$count){
+	protected static function replace_preg_cb(&$match, &$replace, &$t, &$count){
 		$t = preg_replace_callback($match, $replace, $t, -1, $count);
+		if (is_null($t)){
+			throw new Exception('Memory error, increase pcre.backtrack_limit in php.ini');
+		}
 	}
 
 
@@ -339,8 +389,8 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_split(&$match,&$replace,&$t,&$count){
-		throw new InvalidArgumentException('split rule allways needs a callback function as replace');
+	protected static function replace_split(&$match, &$replace, &$t, &$count){
+		throw new InvalidArgumentException('split rule always needs a callback function as replace');
 	}
 
 	/**
@@ -350,7 +400,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_split_cb(&$match,&$replace,&$t,&$count){
+	protected static function replace_split_cb(&$match, &$replace, &$t, &$count){
 		$a = explode($match[0], $t);
 		$t = join($match[1], array_map($replace,$a));
 	}
@@ -372,7 +422,7 @@ class TextWheelDebug extends TextWheel {
 	 * @param bool $raw
 	 * @return int/strinf
 	 */
-	protected function timer($t='rien', $raw = false) {
+	protected function timer($t = 'rien', $raw = false) {
 		static $time;
 		$a=time(); $b=microtime();
 		// microtime peut contenir les microsecondes et le temps
@@ -450,12 +500,13 @@ class TextWheelDebug extends TextWheel {
 			<table class='sortable'>
 			<caption>Temps par rule</caption>
 			<thead><tr><th>temps&nbsp;(ms)</th><th>rule</th><th>application</th><th>t/u&nbsp;(ms)</th><th>t/n-u&nbsp;(ms)</th></tr></thead>\n";
+			$total = 0;
 			foreach($time as $t => $r) {
 				$applications = intval(TextWheelDebug::$u[$r]);
 				$total += $t;
 				if(intval($t*10))
 					echo "<tr>
-					<td class='number strong'>".number_format(round($t*10)/10,1)."</td><td> ".htmlspecialchars($r)."</td>
+					<td class='number strong'>".number_format(round($t*10)/10,1)."</td><td> ".spip_htmlspecialchars($r)."</td>
 					<td"
 					. (!$applications ? " class='zero'" : "")
 					.">".$applications."/".intval(TextWheelDebug::$w[$r])."</td>
@@ -478,7 +529,7 @@ class TextWheelDebug extends TextWheel {
 		}
 	}
 
-	public static function outputTotal($liste, $profondeur=0) {
+	public static function outputTotal($liste, $profondeur = 0) {
 		ksort($liste);
 		foreach ($liste as $cause => $duree) {
 			if (is_array($duree)) {
@@ -486,7 +537,7 @@ class TextWheelDebug extends TextWheel {
 			} else {
 				echo "<tr class='prof-$profondeur'>
 					<td class='number'><b>".intval($duree)."</b>&nbsp;ms</td>
-					<td class='name'>".htmlspecialchars($cause)."</td>
+					<td class='name'>".spip_htmlspecialchars($cause)."</td>
 					</tr>\n";
 			}
 		}

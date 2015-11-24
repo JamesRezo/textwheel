@@ -18,6 +18,8 @@
  *
  */
 
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
 class TextWheelRule {
 
 	## rule description
@@ -36,7 +38,8 @@ class TextWheelRule {
 	## the rule will be applied if the text...
 	# optional
 	var $if_chars; # ...contains one of these chars
-	var $if_str; # ...contains this string (case insensitive)
+	var $if_str; # ...contains this string (case sensitive)
+	var $if_stri; # ...contains this string (case insensitive)
 	var $if_match; # ...matches this simple expr
 
 
@@ -70,7 +73,7 @@ class TextWheelRule {
 	 * @param <type> $args
 	 * @return <type>
 	 */
-	public function TextWheelRule($args) {
+	public function __construct($args) {
 		if (!is_array($args))
 			return;
 		foreach($args as $k=>$v)
