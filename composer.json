@@ -17,5 +17,10 @@
             "name": "Fil",
             "email": "fil@rezo.net"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "TextWheel\\": "src/"
+        }
+    }
 }
