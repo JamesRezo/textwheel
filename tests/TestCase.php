@@ -26,7 +26,7 @@ class TestCase extends PHPUnit_Framework_TestCase
 {
     protected $text = 'This is a simple text';
 
-    public function getRule($type = 'Preg', array $args = array())
+    public function getRule($type = 'Preg', $name = 'a PregRule', array $args = array())
     {
         if (empty($args)) {
             $args = array(
@@ -36,6 +36,6 @@ class TestCase extends PHPUnit_Framework_TestCase
         }
         $class = 'TextWheel\Rule\\'.$type.'Rule';
 
-        return new $class($args);
+        return new $class($name, $args);
     }
 }

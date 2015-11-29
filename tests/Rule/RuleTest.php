@@ -31,12 +31,14 @@ class RuleTest extends TestCase
         $data['Preg Rule'] = array(
             'preg',
             'Preg',
+            'a Preg Rule',
             array('match' => 'text', 'replace' => 'test'),
         );
 
         $data['Split with glue'] = array(
             'split',
             'Split',
+            'a Split Rule',
             array('match' => 'text', 'replace' => 'test', 'glue' => 'glue'),
         );
 
@@ -46,9 +48,9 @@ class RuleTest extends TestCase
     /**
      * @dataProvider dataValidArgs
      */
-    public function testValidArgs($expected, $type, $args)
+    public function testValidArgs($expected, $type, $name, $args)
     {
-        $rule = $this->getRule($type, $args);
+        $rule = $this->getRule($type, $name, $args);
 
         $this->assertFalse($rule->isDisabled());
         $this->assertTrue($expected === $rule->getType());
@@ -60,16 +62,19 @@ class RuleTest extends TestCase
 
         $data['Replace missing'] = array(
             'Preg',
+            'a Preg Rule',
             array('match' => 'test'),
         );
 
         $data['Match is an array'] = array(
             'Split',
+            'a Split Rule',
             array('match' => array('test1', 'test2'), 'replace' => 'test'),
         );
 
         $data['Glue is an array'] = array(
             'Split',
+            'another Split Rule',
             array('match' => 'test', 'replace' => 'test', 'glue' => array('glue')),
         );
 
@@ -80,8 +85,8 @@ class RuleTest extends TestCase
      * @expectedException InvalidArgumentException
      * @dataProvider dataInvalidArgs
      */
-    public function testInvalidArgs($type, $args)
+    public function testInvalidArgs($type, $name, $args)
     {
-        $rule = $this->getRule($type, $args);
+        $rule = $this->getRule($type, $name, $args);
     }
 }

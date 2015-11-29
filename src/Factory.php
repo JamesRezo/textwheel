@@ -18,13 +18,37 @@
  *
  */
 
-namespace TextWheel\RuleSet;
+namespace TextWheel;
 
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 
-abstract class DataSet
+class Factory
 {
+    protected static function checkRuleType($type)
+    {
+        static $classes = array(
+            'preg' => 'TextWheel\Rule\PregRule',
+            'all' => 'TextWheel\Rule\AllRule',
+            'split' => 'TextWheel\Rule\SplitRule',
+            'str' => 'TextWheel\Rule\StrRule',
+        );
+
+        return array_key_exists($type, $classes) ? $classes[$type] : false;
+    }
+
+    public static function createRule($name, array $args)
+    {
+        $type = isset($args['type']) ? $args['type'] : 'preg';
+        $class = self::checkRuleType($type);
+
+        if (!class_exists($class)) {
+            throw new \Exception('No such a Rule type.');
+        }
+
+        return new $class($name, $args);
+    }
+
     /**
      * file finder : can be overloaded in order to use application dependant
      * path find method
@@ -33,7 +57,7 @@ abstract class DataSet
      * @param string $path
      * @return string
      */
-    protected function findFile($file, $path = '')
+    public static function findFile($file, $path = '')
     {
         static $defaultPath;
 
@@ -66,11 +90,11 @@ abstract class DataSet
      *
      * @return array
      */
-    protected function loadFile($file, $defaultPath = '')
+    public static function loadFile($file, $defaultPath = '')
     {
         if (!preg_match(',[.]ya?ml$,i', $file)
           // external rules
-          or !$file = $this->findFile($file, $defaultPath)) {
+          or !$file = self::findFile($file, $defaultPath)) {
             return array();
         }
 
@@ -93,5 +117,24 @@ abstract class DataSet
             $rules[] = array('require' => $f, 'priority' => -1000);
         }
         return $rules;
+    }
+
+    /**
+     * public static loader
+     * can be overloaded to use memoization
+     *
+     * @param array $ruleset
+     * @param string $callback
+     * @param string $class
+     * @return class
+     */
+    public static function getRuleSet($ruleset, $callback = '', $class = 'TextWheel\Rule\RuleSet')
+    {
+        $ruleset = new $class($ruleset);
+        if ($callback) {
+            $callback($ruleset);
+        }
+
+        return $ruleset;
     }
 }

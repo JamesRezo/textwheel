@@ -29,14 +29,21 @@ class SplitRule extends Rule implements RuleInterface
      */
     protected $glue = null;
 
-    public function __construct(array $args)
+    public function __construct($name, array $args)
     {
         $this->type = 'split';
         unset($args['type']);
 
-        parent::__construct($args);
+        parent::__construct($name, $args);
     }
 
+    /**
+     * Specific check of a Split Rule.
+     *
+     * @throws InvalidArgumentException match or glue mistake.
+     *
+     * @return void
+     */
     protected function checkValidity()
     {
         parent::checkValidity();

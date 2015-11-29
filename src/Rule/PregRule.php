@@ -22,12 +22,12 @@ namespace TextWheel\Rule;
 
 class PregRule extends Rule implements RuleInterface
 {
-    public function __construct(array $args)
+    public function __construct($name, array $args)
     {
         $this->type = 'preg';
         unset($args['type']);
 
-        parent::__construct($args);
+        parent::__construct($name, $args);
     }
 
     public function replace($text)

@@ -20,7 +20,7 @@
 
 namespace TextWheel\Rule;
 
-abstract class Rule
+abstract class Rule extends BaseRule implements RuleInterface
 {
     protected $type;
 
@@ -28,46 +28,26 @@ abstract class Rule
 
     protected $replace;
 
-    /** @var boolean true if rule is disabled */
-    protected $disabled = false;
-
-    /** @var integer rule priority (rules are applied in ascending order) */
-    protected $priority = 0;
-
-    /**
-     * Rule constructor.
-     *
-     * @param array $args Properties of the rule
-     */
-    public function __construct(array $args)
+    protected function initialize($args)
     {
-        if (isset($args['disabled'])) {
-            $this->disabled = (bool) $args['disabled'];
-            unset($args['disabled']);
-        }
-
-        if (isset($args['priority'])) {
-            if (is_int($args['priority'])) {
-                $this->priority = $args['priority'];
-            }
-            unset($args['priority']);
-        }
-
-        foreach ($args as $k => $v) {
-            if (property_exists($this, $k)) {
-                $this->$k = $args[$k];
+        foreach ($args as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->$key = $value;
             }
         }
-        $this->checkValidity(); // check that the rule is valid
     }
 
     /**
      * Rule checker.
      *
+     * @throws InvalidArgumentException if mandatory arguments are missing.
+     *
      * @return void
      */
     protected function checkValidity()
     {
+        parent::checkValidity();
+
         #mandatory args
         foreach (array('type', 'match', 'replace') as $property) {
             if (!isset($this->$property)) {
@@ -76,27 +56,23 @@ abstract class Rule
         }
     }
 
+    public function isWheel()
+    {
+        return false;
+    }
+
+    public function add(RuleInterface $rule)
+    {
+        return false;
+    }
+
+    public function remove(RuleInterface $rule)
+    {
+        return false;
+    }
+
     public function getType()
     {
         return $this->type;
     }
-
-    public function isDisabled()
-    {
-        return $this->disabled === true;
-    }
-
-    public function setDisabled()
-    {
-        $this->disabled = true;
-
-        return $this;
-    }
-
-    public function getPriority()
-    {
-        return $this->priority;
-    }
-
-    abstract public function replace($text);
 }

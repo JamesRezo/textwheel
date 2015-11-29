@@ -22,12 +22,12 @@ namespace TextWheel\Rule;
 
 class AllRule extends Rule implements RuleInterface
 {
-    public function __construct(array $args)
+    public function __construct($name, array $args)
     {
         $this->type = 'all';
         unset($args['type']);
 
-        parent::__construct($args);
+        parent::__construct($name, $args);
     }
 
     public function replace($text)
@@ -35,8 +35,8 @@ class AllRule extends Rule implements RuleInterface
         # special case: replace $0 with $t
         #   replace: "A$0B" will surround the string with A..B
         #   replace: "$0$0" will repeat the string
-        if (strpos($this->replace, '$0')!==false) {
-            $text = str_replace('$0', $t, $this->replace);
+        if (strpos($this->replace, '$0') !== false) {
+            $text = str_replace('$0', $text, $this->replace);
         } else {
             $text = $this->replace;
         }

@@ -32,4 +32,9 @@ interface RuleInterface
      * @return String       The output text
      */
     public function replace($text);
+
+    public function add(RuleInterface $rule);
+    public function remove(RuleInterface $rule);
+    public function getName();
+    public function isWheel();
 }
