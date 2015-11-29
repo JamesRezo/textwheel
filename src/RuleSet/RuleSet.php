@@ -18,11 +18,16 @@
  *
  */
 
-namespace TextWheel;
+namespace TextWheel\RuleSet;
 
-class TextWheelRuleSet extends TextWheelDataSet
+use TextWheel\Rule;
+
+class RuleSet extends DataSet
 {
-    # sort flag
+    /** @var Rule[] List of rules */
+    protected $rules = array();
+
+    /** @var boolean sort flag */
     protected $sorted = true;
 
     /**
@@ -47,7 +52,7 @@ class TextWheelRuleSet extends TextWheelDataSet
      * @param string $class
      * @return class
      */
-    public static function &loader($ruleset, $callback = '', $class = 'TextWheelRuleSet')
+    public static function loader($ruleset, $callback = '', $class = 'TextWheelRuleSet')
     {
         $ruleset = new $class($ruleset);
         if ($callback) {
@@ -62,42 +67,38 @@ class TextWheelRuleSet extends TextWheelDataSet
      * @param string $name
      * @return string
      */
-    public function &getRule($name)
+    public function getRule($name)
     {
-        if (isset($this->data[$name])) {
-            return $this->data[$name];
-        }
-        $result = null;
-        return $result;
+        return isset($this->rules[$name]) ? $this->rules[$name] : null;
     }
     
     /**
      * get sorted Rules
      * @return array
      */
-    public function &getRules()
+    public function getRules()
     {
         $this->sort();
-        return $this->data;
+
+        return $this->rules;
     }
 
     /**
-     * add a rule
+     * Add a rule.
      *
      * @param TextWheelRule $rule
      */
-    public function addRule($rule)
+    public function addRule(RuleInterface $rule)
     {
-        # cast array-rule to object
-        if (is_array($rule)) {
-            $rule = new TextWheelRule($rule);
-        }
-        $this->data[] = $rule;
+        $this->rules[] = $rule;
         $this->sorted = false;
+
+        return $this;
     }
 
     /**
-     * add an list of rules
+     * Add a list of rules.
+     *
      * can be
      * - an array of rules
      * - a string filename
@@ -137,9 +138,11 @@ class TextWheelRuleSet extends TextWheelDataSet
                     $rules[$i]->replace = new $class($rules[$i]->replace, $filepath);
                 }
             }
-            $this->data = array_merge($this->data, $rules);
+            $this->rules = array_merge($this->rules, $rules);
             $this->sorted = false;
         }
+
+        return $this;
     }
 
     /**
@@ -151,18 +154,20 @@ class TextWheelRuleSet extends TextWheelDataSet
     {
         if (!$this->sorted) {
             $rulz = array();
-            foreach ($this->data as $index => $rule) {
-                if (!$rule->disabled) {
-                    $rulz[intval($rule->priority)][$index] = $rule;
+            foreach ($this->rules as $index => $rule) {
+                if (!$rule->isDisabled()) {
+                    $rulz[$rule->getPriority()][$index] = $rule;
                 }
             }
             ksort($rulz);
-            $this->data = array();
+            $this->rules = array();
             foreach ($rulz as $rules) {
-                $this->data += $rules;
+                $this->rules += $rules;
             }
 
             $this->sorted = true;
         }
+
+        return $this;
     }
 }

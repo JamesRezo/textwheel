@@ -18,13 +18,13 @@
  *
  */
 
-namespace TextWheel;
+namespace TextWheel\RuleSet;
 
-abstract class TextWheelDataSet
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Exception\ParseException;
+
+abstract class DataSet
 {
-    # list of data
-    protected $data = array();
-
     /**
      * file finder : can be overloaded in order to use application dependant
      * path find method
@@ -33,9 +33,9 @@ abstract class TextWheelDataSet
      * @param string $path
      * @return string
      */
-    protected function findFile(&$file, $path = '')
+    protected function findFile($file, $path = '')
     {
-        static $default_path;
+        static $defaultPath;
 
         // absolute file path ?
         if (file_exists($file)) {
@@ -43,15 +43,15 @@ abstract class TextWheelDataSet
         }
 
         // file embed with texwheels, relative to calling ruleset
-        if ($path and file_exists($f = $path.$file)) {
+        if ($path and file_exists($f = $path . $file)) {
             return $f;
         }
 
         // textwheel default path ?
-        if (!$default_path) {
-            $default_path = dirname(__FILE__).'/../wheels/';
+        if (!$defaultPath) {
+            $defaultPath = __DIR__ . '/../wheels/';
         }
-        if (file_exists($f = $default_path.$file)) {
+        if (file_exists($f = $defaultPath . $file)) {
             return $f;
         }
 
@@ -59,40 +59,39 @@ abstract class TextWheelDataSet
     }
     
     /**
-     * Load a yaml file describing data
+     * Load a yaml file describing rules.
+     *
      * @param string $file
      * @param string $default_path
+     *
      * @return array
      */
-    protected function loadFile(&$file, $default_path = '')
+    protected function loadFile($file, $defaultPath = '')
     {
-        if (!preg_match(',[.]yaml$,i', $file)
+        if (!preg_match(',[.]ya?ml$,i', $file)
           // external rules
-          or !$file = $this->findFile($file, $default_path)) {
+          or !$file = $this->findFile($file, $defaultPath)) {
             return array();
         }
 
-        defined('_YAML_EVAL_PHP') || define('_YAML_EVAL_PHP', false);
-        if (!function_exists('yaml_decode')) {
-            if (function_exists('include_spip')) {
-                include_spip('inc/yaml-mini');
-            } else {
-                require_once dirname(__FILE__).'/../inc/yaml.php';
-            }
-        }
-        $dataset = yaml_decode(file_get_contents($file));
+        $yaml = new Parser();
 
-        if (is_null($dataset)) {
-            $dataset = array();
+        try {
+            $rules = $yaml->parse(file_get_contents($file));
+        } catch (ParseException $e) {
+            printf("Unable to parse the YAML string: %s", $e->getMessage());
         }
-#           throw new DomainException('yaml file is empty, unreadable or badly formed: '.$file.var_export($dataset,true));
+
+        if (is_null($rules)) {
+            $rules = array();
+        }
 
         // if a php file with same name exists
         // include it as it contains callback functions
-        if ($f = preg_replace(',[.]yaml$,i', '.php', $file)
+        if ($f = preg_replace(',[.]ya?ml$,i', '.php', $file)
         and file_exists($f)) {
-            $dataset[] = array('require' => $f, 'priority' => -1000);
+            $rules[] = array('require' => $f, 'priority' => -1000);
         }
-        return $dataset;
+        return $rules;
     }
 }
