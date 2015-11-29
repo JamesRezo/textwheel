@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * TextWheel 0.1
  *
  * let's reinvent the wheel one last time
@@ -20,8 +20,17 @@
 
 namespace TextWheel\Rule;
 
+/**
+ * Replacement via str_replace or strtr_replace functions.
+ */
 class StrRule extends Rule implements RuleInterface
 {
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $name The name of the rule
+     * @param array  $args Properties of the rule
+     */
     public function __construct($name, array $args)
     {
         $this->type = 'str';
@@ -30,6 +39,13 @@ class StrRule extends Rule implements RuleInterface
         parent::__construct($name, $args);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param  string $text The input text
+     *
+     * @return string       The output text
+     */
     public function replace($text)
     {
         if (!is_string($this->match) or strpos($text, $this->match) !== false) {

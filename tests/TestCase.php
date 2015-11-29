@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * TextWheel 0.1
  *
  * let's reinvent the wheel one last time
@@ -22,6 +22,11 @@ namespace TextWheel\Test;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * Main tests case.
+ *
+ * @author James Hautot <james@rezo.net>
+ */
 class TestCase extends PHPUnit_Framework_TestCase
 {
     protected $text = 'This is a simple text';

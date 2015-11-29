@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * TextWheel 0.1
  *
  * let's reinvent the wheel one last time
@@ -23,8 +23,18 @@ namespace TextWheel;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 
+/**
+ * TextWheel Factory.
+ */
 class Factory
 {
+    /**
+     * Checks if a concrete class of a type exists.
+     *
+     * @param  string $type   a type of rule
+     *
+     * @return string|boolean a class name if exists or false
+     */
     protected static function checkRuleType($type)
     {
         static $classes = array(
@@ -37,6 +47,14 @@ class Factory
         return array_key_exists($type, $classes) ? $classes[$type] : false;
     }
 
+    /**
+     * Creates a Rule object.
+     *
+     * @param  string $name  The name of the rule
+     * @param  array  $args  Properties of the rule
+     *
+     * @return RuleInterface [description]
+     */
     public static function createRule($name, array $args)
     {
         $type = isset($args['type']) ? $args['type'] : 'preg';

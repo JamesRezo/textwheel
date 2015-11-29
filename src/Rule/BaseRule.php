@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * TextWheel 0.1
  *
  * let's reinvent the wheel one last time
@@ -20,24 +20,28 @@
 
 namespace TextWheel\Rule;
 
+/**
+ * Base Rule Object.
+ */
 abstract class BaseRule
 {
-    /** @var string The name of the rule */
+    /** @var string                  The name of the rule */
     private $name;
 
-    /** @var boolean true if rule is disabled */
+    /** @var boolean                 true if the rule is disabled */
     protected $disabled = false;
 
-    /** @var integer rule priority (rules are applied in ascending order) */
+    /** @var integer                 Rule priority (rules are applied in ascending order) */
     protected $priority = 0;
 
-    /** @var Condition|null condition to apply the rule */
+    /** @var ConditionInterface|null Condition to apply optionaly to the rule */
     protected $condition = null;
 
     /**
-     * Rule constructor.
+     * Base Rule constructor.
      *
-     * @param array $args Properties of the rule
+     * @param string $name The name of the rule
+     * @param array  $args Properties of the rule
      */
     public function __construct($name, array $args)
     {
@@ -60,7 +64,14 @@ abstract class BaseRule
         $this->checkValidity(); // check that the rule is valid
     }
 
-    abstract protected function initialize($args);
+    /**
+     * Sets custom properties for the rule.
+     *
+     * @param  array $args Properties of the rule
+     *
+     * @return void
+     */
+    abstract protected function initialize(array $args);
 
     /**
      * Rule checker.
@@ -77,16 +88,25 @@ abstract class BaseRule
         }
     }
 
+    /** {@inheritdoc} */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * Tells if the rule is disabled.
+     *
+     * @return boolean true if the rule is disabled
+     */
     public function isDisabled()
     {
         return $this->disabled === true;
     }
 
+    /**
+     * Disable the rule.
+     */
     public function setDisabled()
     {
         $this->disabled = true;
@@ -94,24 +114,55 @@ abstract class BaseRule
         return $this;
     }
 
+    /**
+     * Gets the priority of the rule.
+     *
+     * @return integer priory of the rule
+     *
+     * @see RuleSet::sort()
+     */
     public function getPriority()
     {
         return $this->priority;
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param  string $text The input text
+     *
+     * @throws Exception    In case the replacement cannot work
+     *
+     * @return string       The output text
+     */
     abstract public function replace($text);
 
+    /**
+     * Tells if the rule has condition applicable.
+     *
+     * @return boolean true if a condition is set
+     */
     public function hasCondition()
     {
         return isset($this->condition);
     }
 
+    /**
+     * Gets the condition of the rule.
+     *
+     * @return ConditionInterface the condition to apply the rule
+     */
     public function getCondition()
     {
         return $this->condition;
     }
 
-    protected function setCondition($args)
+    /**
+     * Sets an optional condition for this rule.
+     *
+     * @param array $args Properties of the rule
+     */
+    protected function setCondition(array $args)
     {
         static $conditions = array(
             'if_chars' => 'TextWheel\Rule\Condition\CharsCondition',

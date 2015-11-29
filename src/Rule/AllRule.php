@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * TextWheel 0.1
  *
  * let's reinvent the wheel one last time
@@ -20,8 +20,17 @@
 
 namespace TextWheel\Rule;
 
+/**
+ * Replacement of all text
+ */
 class AllRule extends Rule implements RuleInterface
 {
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $name The name of the rule
+     * @param array  $args Properties of the rule
+     */
     public function __construct($name, array $args)
     {
         $this->type = 'all';
@@ -30,6 +39,13 @@ class AllRule extends Rule implements RuleInterface
         parent::__construct($name, $args);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param  string $text The input text
+     *
+     * @return string       The output text
+     */
     public function replace($text)
     {
         # special case: replace $0 with $t

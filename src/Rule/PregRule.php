@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * TextWheel 0.1
  *
  * let's reinvent the wheel one last time
@@ -20,8 +20,17 @@
 
 namespace TextWheel\Rule;
 
+/**
+ * Replacement using PCRE preg_* functions.
+ */
 class PregRule extends Rule implements RuleInterface
 {
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $name The name of the rule
+     * @param array  $args Properties of the rule
+     */
     public function __construct($name, array $args)
     {
         $this->type = 'preg';
@@ -30,6 +39,15 @@ class PregRule extends Rule implements RuleInterface
         parent::__construct($name, $args);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param  string $text The input text
+     *
+     * @throws Exception    if pcre parameter is insufficient
+     *
+     * @return string       The output text
+     */
     public function replace($text)
     {
         $text = preg_replace($this->match, $this->replace, $text, -1);

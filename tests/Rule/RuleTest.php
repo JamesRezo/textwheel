@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * TextWheel 0.1
  *
  * let's reinvent the wheel one last time
@@ -22,6 +22,11 @@ namespace TextWheel\Test\Rule;
 
 use TextWheel\Test\TestCase;
 
+/**
+ * Rule tests.
+ *
+ * @author James Hautot <james@rezo.net>
+ */
 class RuleTest extends TestCase
 {
     public function dataValidArgs()

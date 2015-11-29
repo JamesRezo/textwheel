@@ -21,32 +21,16 @@
 namespace TextWheel\Rule\Condition;
 
 /**
- * Checks if a subtext is in a text in a case-insensitive way.
+ * Condition Interface.
  */
-class StriCondition
+interface ConditionInterface
 {
-    /** @var string the neede to chek in a haystack */
-    protected $condition = '';
-
     /**
-     * Stri constructor.
-     *
-     * @param string $condition a subtext
-     */
-    public function __construct($condition)
-    {
-        $this->condition = $condition;
-    }
-
-    /**
-     * {@inheritdoc}
+     * A condition to verify if a rule applies to a text.
      *
      * @param  string  $text a text input
      *
      * @return boolean       true if the rule applies to the input text
      */
-    public function appliesTo($text)
-    {
-        return stripos($text, $this->condition) !== false;
-    }
+    public function appliesTo($text);
 }

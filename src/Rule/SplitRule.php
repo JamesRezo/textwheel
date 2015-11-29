@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * TextWheel 0.1
  *
  * let's reinvent the wheel one last time
@@ -20,6 +20,9 @@
 
 namespace TextWheel\Rule;
 
+/**
+ * Replacement by spliting/joining text/array
+ */
 class SplitRule extends Rule implements RuleInterface
 {
     /**
@@ -29,6 +32,12 @@ class SplitRule extends Rule implements RuleInterface
      */
     protected $glue = null;
 
+    /** 
+     * {@inheritdoc}
+     *
+     * @param string $name The name of the rule
+     * @param array  $args Properties of the rule
+     */
     public function __construct($name, array $args)
     {
         $this->type = 'split';
