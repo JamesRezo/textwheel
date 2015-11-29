@@ -161,6 +161,8 @@ abstract class BaseRule
      * Sets an optional condition for this rule.
      *
      * @param array $args Properties of the rule
+     *
+     * @throws InvalidArgumentException if more than one condition defined
      */
     protected function setCondition(array $args)
     {
@@ -178,6 +180,12 @@ abstract class BaseRule
 
             $key =  key($condition);
             $value = $condition[$key];
+            if ($key == 'if_str') {
+                # optimization: strpos or stripos?
+                if (strtolower($value) !== strtoupper($value)) {
+                    $key = 'if_stri';
+                }
+            }
             $class = $conditions[$key];
 
             $this->condition = new $class($value);

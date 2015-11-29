@@ -25,6 +25,8 @@ namespace TextWheel\Rule;
  */
 class StrRule extends Rule implements RuleInterface
 {
+    protected $strtr = false;
+
     /**
      * {@inheritdoc}
      *
@@ -39,6 +41,27 @@ class StrRule extends Rule implements RuleInterface
         parent::__construct($name, $args);
     }
 
+    protected function initialize()
+    {
+        parent::initialize($args);
+
+        // test if quicker strtr usable
+        if (is_array($this->match) and is_array($this->replace)
+            and $c = array_map('strlen', $this->match)
+            and $c = array_unique($c)
+            and count($c) == 1
+            and reset($c) == 1
+            and $c = array_map('strlen', $this->replace)
+            and $c = array_unique($c)
+            and count($c) == 1
+            and reset($c) == 1
+        ) {
+            $this->match = implode('', $this->match);
+            $this->replace = implode('', $this->replace);
+            $this->strtr = true;
+        }
+    }
+
     /**
      * {@inheritdoc}
      *
@@ -48,10 +71,26 @@ class StrRule extends Rule implements RuleInterface
      */
     public function replace($text)
     {
+        if ($this->strtr) {
+            return $this->replaceStrtr($text);
+        }
+
         if (!is_string($this->match) or strpos($text, $this->match) !== false) {
             $text = str_replace($this->match, $this->replace, $text);
         }
 
         return $text;
+    }
+
+    /**
+     * Fast Static string replacement one char to one char.
+     *
+     * @param  string $text The input text
+     *
+     * @return string       The output text
+     */
+    public function replaceStrtr($text)
+    {
+        return strtr($text, $this->match, $this->replace);
     }
 }

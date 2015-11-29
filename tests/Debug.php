@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * TextWheel 0.1
  *
  * let's reinvent the wheel one last time
@@ -18,9 +18,14 @@
  *
  */
 
-namespace TextWheel;
+namespace TextWheel\Test;
 
-class TextWheelDebug extends TextWheel
+use TextWheel\TextWheel;
+
+/**
+ * Debug TextWheel Object.
+ */
+class Debug extends TextWheel
 {
     protected static $t; #tableaux des temps
     protected static $tu; #tableaux des temps (rules utilises)
@@ -30,8 +35,8 @@ class TextWheelDebug extends TextWheel
     public static $total;
 
     /**
-     * Timer for profiling
-     * 
+     * Timer for profiling.
+     *
      * @staticvar int $time
      * @param string $t
      * @param bool $raw
