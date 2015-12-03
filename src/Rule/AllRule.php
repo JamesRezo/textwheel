@@ -35,6 +35,7 @@ class AllRule extends Rule implements RuleInterface
     {
         $this->type = 'all';
         unset($args['type']);
+        $args['match'] = '';
 
         parent::__construct($name, $args);
     }
@@ -58,5 +59,17 @@ class AllRule extends Rule implements RuleInterface
         }
 
         return $text;
+    }
+
+    /**
+     * Callback replacement of all text.
+     *
+     * @param  String $text The input text
+     *
+     * @return string       The output text
+     */
+    public function callback($text)
+    {
+        return $this->replace($text);
     }
 }

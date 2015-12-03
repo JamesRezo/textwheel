@@ -93,4 +93,22 @@ class StrRule extends Rule implements RuleInterface
     {
         return strtr($text, $this->match, $this->replace);
     }
+
+    /**
+     * Callback string replacement.
+     *
+     * @param  String $text The input text
+     *
+     * @return string       The output text
+     */
+    public function callback($text)
+    {
+        if (strpos($text, $this->match) !== false) {
+            if (count($b = explode($this->match, $t)) > 1) {
+                $t = join($this->replace($this->match), $b);
+            }
+        }
+
+        return $text;
+    }
 }

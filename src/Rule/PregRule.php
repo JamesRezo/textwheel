@@ -51,6 +51,25 @@ class PregRule extends Rule implements RuleInterface
     public function replace($text)
     {
         $text = preg_replace($this->match, $this->replace, $text, -1);
+
+        if (is_null($text)) {
+            throw new \Exception('Memory error, increase pcre.backtrack_limit in php.ini');
+        }
+
+        return $text;
+    }
+
+    /**
+     * Callback preg replacement.
+     *
+     * @param  String $text The input text
+     *
+     * @return string       The output text
+     */
+    public function callback($text)
+    {
+        $text = preg_replace_callback($this->match, $this->replace, $text, -1);
+
         if (is_null($text)) {
             throw new \Exception('Memory error, increase pcre.backtrack_limit in php.ini');
         }

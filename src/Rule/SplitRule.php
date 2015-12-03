@@ -32,7 +32,7 @@ class SplitRule extends Rule implements RuleInterface
      */
     protected $glue = null;
 
-    /** 
+    /**
      * {@inheritdoc}
      *
      * @param string $name The name of the rule
@@ -44,6 +44,11 @@ class SplitRule extends Rule implements RuleInterface
         unset($args['type']);
 
         parent::__construct($name, $args);
+
+        $this->match = array(
+            $this->match,
+            is_null($this->glue) ? $this->match : $this->glue
+        );
     }
 
     /**
@@ -75,5 +80,20 @@ class SplitRule extends Rule implements RuleInterface
     public function replace($text)
     {
         throw new \Exception('split rule always needs a callback function as replace');
+    }
+
+    /**
+     * Callback split replacement.
+     *
+     * @param  String $text The input text
+     *
+     * @return string       The output text
+     */
+    public function callback($text)
+    {
+        $splitText = explode($this->match[0], $text);
+        $text = join($this->match[1], array_map($this->replace, $splitText));
+
+        return $text;
     }
 }
