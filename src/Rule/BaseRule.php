@@ -20,6 +20,8 @@
 
 namespace TextWheel\Rule;
 
+use TextWheel\Condition\ConditionInterface;
+
 /**
  * Base Rule Object.
  */
@@ -167,10 +169,10 @@ abstract class BaseRule
     protected function setCondition(array $args)
     {
         static $conditions = array(
-            'if_chars' => 'TextWheel\Rule\Condition\CharsCondition',
-            'if_match' => 'TextWheel\Rule\Condition\MatchCondition',
-            'if_str' => 'TextWheel\Rule\Condition\StrCondition',
-            'if_stri' => 'TextWheel\Rule\Condition\StriCondition',
+            'if_chars' => 'TextWheel\Condition\CharsCondition',
+            'if_match' => 'TextWheel\Condition\MatchCondition',
+            'if_str' => 'TextWheel\Condition\StrCondition',
+            'if_stri' => 'TextWheel\Condition\StriCondition',
         );
 
         if ($condition = array_intersect_key($args, $conditions)) {

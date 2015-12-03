@@ -18,26 +18,13 @@
  *
  */
 
-namespace TextWheel\Rule\Condition;
+namespace TextWheel\Condition;
 
 /**
- * Checks with pcre if a pattern is found in a text.
+ * Checks if a subtext is in a text in a case-insensitive way.
  */
-class MatchCondition
+class StriCondition extends Condition implements ConditionInterface
 {
-    /** @var string the neede to chek in a haystack */
-    protected $condition = '';
-
-    /**
-     * Match constructor.
-     *
-     * @param string $condition a pattern
-     */
-    public function __construct($condition)
-    {
-        $this->condition = $condition;
-    }
-
     /**
      * {@inheritdoc}
      *
@@ -47,6 +34,6 @@ class MatchCondition
      */
     public function appliesTo($text)
     {
-        return preg_match($this->condition, $text);
+        return stripos($text, $this->condition) !== false;
     }
 }

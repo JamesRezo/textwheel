@@ -18,26 +18,13 @@
  *
  */
 
-namespace TextWheel\Rule\Condition;
+namespace TextWheel\Condition;
 
 /**
- * Checks if a subtext is in a text.
+ * Checks if strprk() finds characters in a text.
  */
-class StrCondition
+class CharsCondition extends Condition implements ConditionInterface
 {
-    /** @var string the neede to chek in a haystack */
-    protected $condition = '';
-
-    /**
-     * Str constructor.
-     *
-     * @param string $condition a subtext
-     */
-    public function __construct($condition)
-    {
-        $this->condition = $condition;
-    }
-
     /**
      * {@inheritdoc}
      *
@@ -47,6 +34,6 @@ class StrCondition
      */
     public function appliesTo($text)
     {
-        return strpos($text, $this->condition) !== false;
+        return strpbrk($text, $rule->condition) !== false;
     }
 }

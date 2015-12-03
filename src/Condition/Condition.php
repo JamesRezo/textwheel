@@ -18,20 +18,20 @@
  *
  */
 
-namespace TextWheel\Rule\Condition;
+namespace TextWheel\Condition;
 
 /**
- * Checks if strprk() finds characters in a text.
+ * Base Condition Object.
  */
-class CharsCondition
+abstract class Condition implements ConditionInterface
 {
-    /** @var string the neede to chek in a haystack */
+    /** @var string the neede to check in a haystack */
     protected $condition = '';
 
     /**
-     * Chars constructor.
+     * Base constructor.
      *
-     * @param string $condition a set of characters
+     * @param string $condition a set or a pattern of characters
      */
     public function __construct($condition)
     {
@@ -45,8 +45,5 @@ class CharsCondition
      *
      * @return boolean       true if the rule applies to the input text
      */
-    public function appliesTo($text)
-    {
-        return strpbrk($text, $rule->condition) !== false;
-    }
+    abstract public function appliesTo($text);
 }

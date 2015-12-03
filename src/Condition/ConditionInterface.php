@@ -18,7 +18,7 @@
  *
  */
 
-namespace TextWheel\Rule\Condition;
+namespace TextWheel\Condition;
 
 /**
  * Condition Interface.
