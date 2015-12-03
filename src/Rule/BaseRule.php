@@ -21,6 +21,7 @@
 namespace TextWheel\Rule;
 
 use TextWheel\Condition\ConditionInterface;
+use TextWheel\Factory;
 
 /**
  * Base Rule Object.
@@ -163,34 +164,9 @@ abstract class BaseRule
      * Sets an optional condition for this rule.
      *
      * @param array $args Properties of the rule
-     *
-     * @throws InvalidArgumentException if more than one condition defined
      */
     protected function setCondition(array $args)
     {
-        static $conditions = array(
-            'if_chars' => 'TextWheel\Condition\CharsCondition',
-            'if_match' => 'TextWheel\Condition\MatchCondition',
-            'if_str' => 'TextWheel\Condition\StrCondition',
-            'if_stri' => 'TextWheel\Condition\StriCondition',
-        );
-
-        if ($condition = array_intersect_key($args, $conditions)) {
-            if (count($condition) !== 1) {
-                throw new \InvalidArgumentException('Too much conditions. Only one expected.');
-            }
-
-            $key =  key($condition);
-            $value = $condition[$key];
-            if ($key == 'if_str') {
-                # optimization: strpos or stripos?
-                if (strtolower($value) !== strtoupper($value)) {
-                    $key = 'if_stri';
-                }
-            }
-            $class = $conditions[$key];
-
-            $this->condition = new $class($value);
-        }
+        $this->condition = Factory::createCondition($args);
     }
 }

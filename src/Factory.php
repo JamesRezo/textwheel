@@ -48,6 +48,43 @@ class Factory
     }
 
     /**
+     * Creates a Condition object.
+     *
+     * @param array $args Properties of the rule
+     *
+     * @throws InvalidArgumentException if more than one condition defined
+     */
+    public static function createCondition($args)
+    {
+        static $conditions = array(
+            'if_chars' => 'TextWheel\Condition\CharsCondition',
+            'if_match' => 'TextWheel\Condition\MatchCondition',
+            'if_str' => 'TextWheel\Condition\StrCondition',
+            'if_stri' => 'TextWheel\Condition\StriCondition',
+        );
+
+        if ($condition = array_intersect_key($args, $conditions)) {
+            if (count($condition) !== 1) {
+                throw new \InvalidArgumentException('Too much conditions. Only one expected.');
+            }
+
+            $key =  key($condition);
+            $value = $condition[$key];
+            if ($key == 'if_str') {
+                # optimization: strpos or stripos?
+                if (strtolower($value) !== strtoupper($value)) {
+                    $key = 'if_stri';
+                }
+            }
+            $class = $conditions[$key];
+
+            return new $class($value);
+        }
+
+        return null;
+    }
+
+    /**
      * Creates a Rule object.
      *
      * @param  string $name  The name of the rule
