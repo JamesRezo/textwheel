@@ -34,6 +34,6 @@ class MatchCondition extends Condition implements ConditionInterface
      */
     public function appliesTo($text)
     {
-        return preg_match($this->condition, $text);
+        return (bool) preg_match($this->condition, $text);
     }
 }

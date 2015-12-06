@@ -53,6 +53,8 @@ class Factory
      * @param array $args Properties of the rule
      *
      * @throws InvalidArgumentException if more than one condition defined
+     *
+     * @return ConditionInterface|null The Condition object or null if no or unknown properties
      */
     public static function createCondition($args)
     {

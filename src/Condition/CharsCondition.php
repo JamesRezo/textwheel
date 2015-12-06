@@ -34,6 +34,6 @@ class CharsCondition extends Condition implements ConditionInterface
      */
     public function appliesTo($text)
     {
-        return strpbrk($text, $rule->condition) !== false;
+        return strpbrk($text, $this->condition) !== false;
     }
 }

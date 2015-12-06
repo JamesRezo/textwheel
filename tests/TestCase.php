@@ -21,6 +21,7 @@
 namespace TextWheel\Test;
 
 use PHPUnit_Framework_TestCase;
+use TextWheel\Factory;
 
 /**
  * Main tests case.
@@ -29,14 +30,44 @@ use PHPUnit_Framework_TestCase;
  */
 class TestCase extends PHPUnit_Framework_TestCase
 {
-    protected $text = 'This is a simple text';
+    protected $text = 'This is a simple test written by myself';
 
-    public function getRule($type = 'Preg', $name = 'a PregRule', array $args = array())
+    protected $fixtures;
+
+    protected function setUp()
+    {
+        $this->fixtures = __DIR__ . '/fixtures/';
+    }
+
+    protected function getCondition(array $args = array())
     {
         if (empty($args)) {
             $args = array(
-                'match' => '/text/',
-                'replace' => 'test',
+                'if_match' => '/by myself/',
+            );
+        }
+
+        return Factory::createCondition($args);
+    }
+
+    protected function getReplacement(array $args = array())
+    {
+        if (empty($args)) {
+            $args = array(
+                'match' => '/test/',
+                'replace' => 'text',
+            );
+        }
+
+        return Factory::createReplacement($args);
+    }
+
+    protected function getRule($name = 'a PregRule', array $args = array())
+    {
+        if (empty($args)) {
+            $args = array(
+                'match' => '/test/',
+                'replace' => 'text',
             );
         }
         $class = 'TextWheel\Rule\\'.$type.'Rule';
