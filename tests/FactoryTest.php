@@ -34,19 +34,16 @@ class FactoryTest extends TestCase
 {
     public function testNoCondition()
     {
-        $this->assertNull(Factory::createCondition(array()));
+        $this->assertEmpty(Factory::createConditions(array()));
     }
 
     public function testUnknownCondition()
     {
-        $this->assertNull(Factory::createCondition(array('unknown' => '')));
+        $this->assertEmpty(Factory::createConditions(array('unknown' => '')));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testTooMuchConditions()
+    public function testConditionList()
     {
-        $condition = $this->getCondition(array('if_str' => "\n", 'if_chars' => 'aeiy'));
+        $this->markTestIncomplete();
     }
 }

@@ -48,15 +48,15 @@ class Factory
     }
 
     /**
-     * Creates a Condition object.
+     * Creates a set of Condition object.
      *
      * @param array $args Properties of the rule
      *
      * @throws InvalidArgumentException if more than one condition defined
      *
-     * @return ConditionInterface|null The Condition object or null if no or unknown properties
+     * @return ConditionInterface[] The Condition object list
      */
-    public static function createCondition($args)
+    public static function createConditions($args)
     {
         static $conditions = array(
             'if_chars' => 'TextWheel\Condition\CharsCondition',
@@ -65,25 +65,23 @@ class Factory
             'if_stri' => 'TextWheel\Condition\StriCondition',
         );
 
+        $set = array();
+
         if ($condition = array_intersect_key($args, $conditions)) {
-            if (count($condition) !== 1) {
-                throw new \InvalidArgumentException('Too much conditions. Only one expected.');
-            }
-
-            $key =  key($condition);
-            $value = $condition[$key];
-            if ($key == 'if_str') {
-                # optimization: strpos or stripos?
-                if (strtolower($value) !== strtoupper($value)) {
-                    $key = 'if_stri';
+            foreach ($condition as $key => $value) {
+                if ($key == 'if_str') {
+                    # optimization: strpos or stripos?
+                    if (strtolower($value) !== strtoupper($value)) {
+                        $key = 'if_stri';
+                    }
                 }
+                $class = $conditions[$key];
+                $set[] = new $class($value);
             }
-            $class = $conditions[$key];
-
-            return new $class($value);
         }
+        ksort($set, SORT_STRING);
 
-        return null;
+        return $set;
     }
 
     /**

@@ -76,8 +76,8 @@ class ConditionTest extends TestCase
      */
     public function testAppliesTo($expected, $args)
     {
-        $condition = $this->getCondition($args);
+        $conditions = $this->getConditions($args);
 
-        $this->assertSame($expected, $condition->appliesTo($this->text));
+        $this->assertSame($expected, $conditions[0]->appliesTo($this->text));
     }
 }
