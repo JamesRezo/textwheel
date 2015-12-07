@@ -42,8 +42,39 @@ class FactoryTest extends TestCase
         $this->assertEmpty(Factory::createConditions(array('unknown' => '')));
     }
 
-    public function testConditionList()
+    public function dataConditionList()
     {
-        $this->markTestIncomplete();
+        $data = array();
+
+        $data['One condition'] = array(
+            array('TextWheel\Condition\CharsCondition'),
+            array('if_chars' => '#')
+        );
+
+        $data['Several conditions sorted'] = array(
+            array('TextWheel\Condition\CharsCondition', 'TextWheel\Condition\StriCondition'),
+            array('if_stri' => '@', 'if_chars' => '#')
+        );
+
+        $data['str optimization'] = array(
+            array('TextWheel\Condition\StriCondition'),
+            array('if_str' => 'alphanumeric')
+        );
+
+        return $data;
+    }
+
+    /**
+     * @dataProvider dataConditionList
+     */
+    public function testConditionList($expected, $args)
+    {
+        $conditions = Factory::createConditions($args);
+
+        foreach ($conditions as $index => $condition) {
+            $conditions[$index] = get_class($condition);
+        }
+
+        $this->assertSame($expected, $conditions);
     }
 }

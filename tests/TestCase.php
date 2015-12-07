@@ -39,7 +39,7 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->fixtures = __DIR__ . '/fixtures/';
     }
 
-    protected function getCondition(array $args = array())
+    protected function getConditions(array $args = array())
     {
         if (empty($args)) {
             $args = array(
@@ -47,7 +47,7 @@ class TestCase extends PHPUnit_Framework_TestCase
             );
         }
 
-        return Factory::createCondition($args);
+        return Factory::createConditions($args);
     }
 
     protected function getReplacement(array $args = array())

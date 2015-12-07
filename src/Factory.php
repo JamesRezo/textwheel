@@ -52,8 +52,6 @@ class Factory
      *
      * @param array $args Properties of the rule
      *
-     * @throws InvalidArgumentException if more than one condition defined
-     *
      * @return ConditionInterface[] The Condition object list
      */
     public static function createConditions($args)
@@ -76,12 +74,12 @@ class Factory
                     }
                 }
                 $class = $conditions[$key];
-                $set[] = new $class($value);
+                $set[$key] = new $class($value);
             }
+            ksort($set, SORT_STRING);
         }
-        ksort($set, SORT_STRING);
 
-        return $set;
+        return array_values($set);
     }
 
     /**
