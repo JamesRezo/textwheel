@@ -20,52 +20,74 @@
 
 namespace TextWheel\Rule;
 
+use TextWheel\Condition\ConditionInterface;
+use TextWheel\Replacement\ReplacementInterface;
+use TextWheel\Factory;
+
 /**
- * Single Rule Object.
+ * Base Rule Object.
  */
-abstract class Rule extends BaseRule implements RuleInterface
+class Rule implements RuleInterface
 {
-    /** @var string Type of the rule */
-    protected $type;
+    /** @var string                     The name of the rule */
+    private $name;
 
-    /** @var array|string patterns to replace */
-    protected $match;
+    /** @var boolean                    true if the rule is disabled */
+    protected $disabled = false;
 
-    /** @var array|string replacements */
-    protected $replace;
+    /** @var integer                    Rule priority (rules are applied in ascending order) */
+    protected $priority = 0;
+
+    /** @var ConditionInterface[]       Conditions to apply optionaly to the rule */
+    protected $conditions = array();
+
+    /** @var ReplacementnInterface|null Replacement to apply to the rule */
+    protected $replacement = null;
 
     /**
-     * {@inheritdoc}
+     * Base Rule constructor.
      *
-     * @param  array $args Properties of the rule
-     *
-     * @return void
+     * @param string $name The name of the rule
+     * @param array  $args Properties of the rule
      */
-    protected function initialize(array $args)
+    public function __construct($name, array $args)
     {
-        foreach ($args as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->$key = $value;
-            }
+        $this->name = $name;
+
+        if (isset($args['disabled'])) {
+            $this->disabled = (bool) $args['disabled'];
+            unset($args['disabled']);
         }
+
+        if (isset($args['priority'])) {
+            if (is_int($args['priority'])) {
+                $this->priority = $args['priority'];
+            }
+            unset($args['priority']);
+        }
+
+        $this->setReplacement($args);
+        $this->setConditions($args);
+        $this->checkValidity(); // check that the rule is valid
     }
 
     /**
      * Rule checker.
      *
-     * @throws InvalidArgumentException if mandatory arguments are missing.
+     * @throws InvalidArgumentException if name property isn't a string.
      *
      * @return void
      */
     protected function checkValidity()
     {
-        parent::checkValidity();
+        #name must be a string
+        if (!is_string($this->name)) {
+            throw new \InvalidArgumentException('The name of the rule must be a string.');
+        }
 
-        #mandatory args
-        foreach (array('type', 'match', 'replace') as $property) {
-            if (!isset($this->$property)) {
-                throw new \InvalidArgumentException($property.' must be defined');
-            }
+        #replacement must be defined
+        if (is_null($this->replacement)) {
+            throw new \InvalidArgumentException('The replacement of the rule is unknown.');
         }
     }
 
@@ -89,13 +111,81 @@ abstract class Rule extends BaseRule implements RuleInterface
         return $this;
     }
 
-    /**
-     * Gets the type og the rule.
-     *
-     * @return string Type of the rule
-     */
-    public function getType()
+    /** {@inheritdoc} */
+    public function getName()
     {
-        return $this->type;
+        return $this->name;
+    }
+
+    /**
+     * Tells if the rule is disabled.
+     *
+     * @return boolean true if the rule is disabled
+     */
+    public function isDisabled()
+    {
+        return $this->disabled === true;
+    }
+
+    /**
+     * Disable the rule.
+     */
+    public function setDisabled()
+    {
+        $this->disabled = true;
+
+        return $this;
+    }
+
+    /**
+     * Gets the priority of the rule.
+     *
+     * @return integer priory of the rule
+     *
+     * @see RuleSet::sort()
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param  string $text The input text
+     *
+     * @throws Exception    In case the replacement cannot work
+     *
+     * @return string       The output text
+     */
+    public function apply($text)
+    {
+        while ($condition = each($this->conditions)) {
+            if (!$condition->appliesTo($text)) {
+                return $text;
+            }
+        }
+
+        return $this->replacement->replace($text);
+    }
+
+    /**
+     * Sets the replacement strategy for this rule.
+     *
+     * @param array $args Properties of the rule
+     */
+    protected function setReplacement(array $args)
+    {
+        $this->replacement = Factory::createReplacement($args);
+    }
+
+    /**
+     * Sets an optional condition for this rule.
+     *
+     * @param array $args Properties of the rule
+     */
+    protected function setConditions(array $args)
+    {
+        $this->condition = Factory::createConditions($args);
     }
 }

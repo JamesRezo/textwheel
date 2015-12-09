@@ -77,4 +77,25 @@ class FactoryTest extends TestCase
 
         $this->assertSame($expected, $conditions);
     }
+
+    public function testNoReplacement()
+    {
+        $this->assertInstanceOf('TextWheel\Replacement\IdentityReplacement', Factory::createReplacement(array()));
+    }
+
+    public function testUnknownReplacement()
+    {
+        $this->assertInstanceOf(
+            'TextWheel\Replacement\IdentityReplacement',
+            Factory::createReplacement(array('type' => 'unknown'))
+        );
+    }
+
+    public function testIsCallbackReplacement()
+    {
+        $this->assertInstanceOf(
+            'TextWheel\Replacement\CallbackPregReplacement',
+            Factory::createReplacement(array('replace' => 'function', 'is_callback' => 'Y'))
+        );
+    }
 }

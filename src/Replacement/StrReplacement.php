@@ -18,33 +18,23 @@
  *
  */
 
-namespace TextWheel\Rule;
+namespace TextWheel\Replacement;
 
 /**
- * Replacement via str_replace or strtr_replace functions.
+ * Replacement by spliting/joining text/array.
  */
-class StrRule extends Rule implements RuleInterface
+class StrReplacement extends Replacement implements ReplacementInterface
 {
+    /** @var boolean use strtr as replacement function if true */
     protected $strtr = false;
 
     /**
      * {@inheritdoc}
      *
-     * @param string $name The name of the rule
-     * @param array  $args Properties of the rule
+     * @return void
      */
-    public function __construct($name, array $args)
-    {
-        $this->type = 'str';
-        unset($args['type']);
-
-        parent::__construct($name, $args);
-    }
-
     protected function initialize()
     {
-        parent::initialize($args);
-
         // test if quicker strtr usable
         if (is_array($this->match) and is_array($this->replace)
             and $c = array_map('strlen', $this->match)
@@ -63,11 +53,11 @@ class StrRule extends Rule implements RuleInterface
     }
 
     /**
-     * {@inheritdoc}
+     * split replacement : invalid.
      *
-     * @param  string $text The input text
+     * @param  String $text The input text
      *
-     * @return string       The output text
+     * @throws Exception Need a Callback
      */
     public function replace($text)
     {
@@ -89,26 +79,8 @@ class StrRule extends Rule implements RuleInterface
      *
      * @return string       The output text
      */
-    public function replaceStrtr($text)
+    protected function replaceStrtr($text)
     {
         return strtr($text, $this->match, $this->replace);
-    }
-
-    /**
-     * Callback string replacement.
-     *
-     * @param  String $text The input text
-     *
-     * @return string       The output text
-     */
-    public function callback($text)
-    {
-        if (strpos($text, $this->match) !== false) {
-            if (count($b = explode($this->match, $t)) > 1) {
-                $t = join($this->replace($this->match), $b);
-            }
-        }
-
-        return $text;
     }
 }

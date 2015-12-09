@@ -18,15 +18,15 @@
  *
  */
 
-namespace TextWheel\Rule;
+namespace TextWheel\Replacement;
 
 /**
- * Rule Interface.
+ * Replacement Interface.
  */
-interface RuleInterface
+interface ReplacementInterface
 {
     /**
-     * The effective application of replacement.
+     * The effective replacement.
      *
      * @param  string $text The input text
      *
@@ -34,26 +34,5 @@ interface RuleInterface
      *
      * @return string       The output text
      */
-    public function apply($text);
-
-    /**
-     * Adds a rule to Composite Rule object.
-     *
-     * @param RuleInterface $rule a Rule to add
-     */
-    public function add(RuleInterface $rule);
-
-    /**
-     * Removes a rule to Composite Rule object.
-     *
-     * @param  RuleInterface $rule a Rule to remove
-     */
-    public function remove(RuleInterface $rule);
-
-    /**
-     * Gets the name of the rule.
-     *
-     * @return string The name of the rule
-     */
-    public function getName();
+    public function replace($text);
 }

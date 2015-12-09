@@ -39,6 +39,11 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->fixtures = __DIR__ . '/fixtures/';
     }
 
+    protected function requireFile($file)
+    {
+        require_once $this->fixtures . $file;
+    }
+
     protected function getConditions(array $args = array())
     {
         if (empty($args)) {

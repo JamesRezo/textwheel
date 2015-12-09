@@ -29,22 +29,51 @@ use Symfony\Component\Yaml\Exception\ParseException;
 class Factory
 {
     /**
-     * Checks if a concrete class of a type exists.
+     * Creates a Replacement object.
      *
-     * @param  string $type   a type of rule
+     * @param array $args Properties of the rule
      *
-     * @return string|boolean a class name if exists or false
+     * @return ReplacementInterface a Replacement Object (Identify as fallback)
      */
-    protected static function checkRuleType($type)
+    public static function createReplacement($args)
     {
-        static $classes = array(
-            'preg' => 'TextWheel\Rule\PregRule',
-            'all' => 'TextWheel\Rule\AllRule',
-            'split' => 'TextWheel\Rule\SplitRule',
-            'str' => 'TextWheel\Rule\StrRule',
+        static $replacements = array(
+            'preg' => 'PregReplacement',
+            'all' => 'AllReplacement',
+            'split' => 'SplitReplacement',
+            'str' => 'StrReplacement',
+            'preg_cb' => 'CallbackPregReplacement',
+            'all_cb' => 'CallbackAllReplacement',
+            'split_cb' => 'CallbackSplitReplacement',
+            'str_cb' => 'CallbackStrReplacement',
         );
 
-        return array_key_exists($type, $classes) ? $classes[$type] : false;
+        static $properties = array(
+            'type' => 'preg',
+            'replace' => null,
+            'match' => '',
+            'is_callback' => false,
+            'glue' => null
+        );
+
+        $args = array_merge($properties, $args);
+        $replacement = array_intersect_key($args, $properties);
+
+        if (!isset($replacement['replace'])) {
+            $replacement['type'] = ''; #To fallback TODO disable the rule
+        }
+        
+        $replacementClass = 'TextWheel\Replacement\\';
+        if ($replacement['is_callback']) {
+            $replacement['type'] = preg_replace('/^(preg|all|split|str)(_cb)?$/', '$1_cb', $replacement['type']);
+        }
+
+        $replacementClass .= array_key_exists($replacement['type'], $replacements) ?
+            $replacements[$replacement['type']] :
+            'IdentityReplacement'
+        ;
+
+        return new $replacementClass($replacement);
     }
 
     /**

@@ -23,7 +23,7 @@ namespace TextWheel\Rule;
 /**
  * Composite Rule Object.
  */
-class RuleSet extends BaseRule implements RuleInterface
+class RuleSet extends Rule implements RuleInterface
 {
     /** @var Rule[] List of Single rules or RuleSet */
     private $rules;
@@ -42,17 +42,6 @@ class RuleSet extends BaseRule implements RuleInterface
         parent::__construct($name, $args);
 
         $this->rules = array();
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @param  array $args Properties of the rule
-     *
-     * @return void
-     */
-    protected function initialize(array $args)
-    {
     }
 
     /**
@@ -84,20 +73,18 @@ class RuleSet extends BaseRule implements RuleInterface
     /**
      * {@inheritdoc}
      *
-     * It applies all the replace() method of the rules that belongs to the Ruleset.
+     * It applies all the apply() method of the rules that belongs to the Ruleset.
      *
      * @param  string $text The input text
      *
      * @return string       The output text
      */
-    public function replace($text)
+    public function apply($text)
     {
         $this->sort();
 
         foreach ($this->rules as $name => $rule) {
-            if (!$rule->hasCondition() || $rule->getCondition()->appliesTo($text)) {
-                $text = $rule->replace($text);
-            }
+            $text = $rule->apply($text);
         }
 
         return $text;

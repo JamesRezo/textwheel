@@ -18,28 +18,13 @@
  *
  */
 
-namespace TextWheel\Rule;
+namespace TextWheel\Replacement;
 
 /**
- * Replacement of all text
+ * Replacement of all text.
  */
-class AllRule extends Rule implements RuleInterface
+class AllReplacement extends Replacement implements ReplacementInterface
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @param string $name The name of the rule
-     * @param array  $args Properties of the rule
-     */
-    public function __construct($name, array $args)
-    {
-        $this->type = 'all';
-        unset($args['type']);
-        $args['match'] = '';
-
-        parent::__construct($name, $args);
-    }
-
     /**
      * {@inheritdoc}
      *
@@ -59,17 +44,5 @@ class AllRule extends Rule implements RuleInterface
         }
 
         return $text;
-    }
-
-    /**
-     * Callback replacement of all text.
-     *
-     * @param  String $text The input text
-     *
-     * @return string       The output text
-     */
-    public function callback($text)
-    {
-        return $this->replace($text);
     }
 }

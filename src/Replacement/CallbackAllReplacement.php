@@ -18,15 +18,15 @@
  *
  */
 
-namespace TextWheel\Rule;
+namespace TextWheel\Replacement;
 
 /**
- * Rule Interface.
+ * Callback replacement of all text.
  */
-interface RuleInterface
+class CallbackAllReplacement extends Replacement implements ReplacementInterface
 {
     /**
-     * The effective application of replacement.
+     * {@inheritdoc}
      *
      * @param  string $text The input text
      *
@@ -34,26 +34,10 @@ interface RuleInterface
      *
      * @return string       The output text
      */
-    public function apply($text);
+    public function replace($text)
+    {
+        $f = $this->replace;
 
-    /**
-     * Adds a rule to Composite Rule object.
-     *
-     * @param RuleInterface $rule a Rule to add
-     */
-    public function add(RuleInterface $rule);
-
-    /**
-     * Removes a rule to Composite Rule object.
-     *
-     * @param  RuleInterface $rule a Rule to remove
-     */
-    public function remove(RuleInterface $rule);
-
-    /**
-     * Gets the name of the rule.
-     *
-     * @return string The name of the rule
-     */
-    public function getName();
+        return call_user_func($f, $text);
+    }
 }
