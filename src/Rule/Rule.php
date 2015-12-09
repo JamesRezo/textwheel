@@ -22,6 +22,7 @@ namespace TextWheel\Rule;
 
 use TextWheel\Condition\ConditionInterface;
 use TextWheel\Replacement\ReplacementInterface;
+use TextWheel\Replacement\IdentityReplacement;
 use TextWheel\Factory;
 
 /**
@@ -56,14 +57,12 @@ class Rule implements RuleInterface
 
         if (isset($args['disabled'])) {
             $this->disabled = (bool) $args['disabled'];
-            unset($args['disabled']);
         }
 
-        if (isset($args['priority'])) {
-            if (is_int($args['priority'])) {
-                $this->priority = $args['priority'];
-            }
-            unset($args['priority']);
+        if (isset($args['priority'])
+            and is_int($args['priority'])
+        ) {
+            $this->priority = $args['priority'];
         }
 
         $this->setReplacement($args);
@@ -83,11 +82,6 @@ class Rule implements RuleInterface
         #name must be a string
         if (!is_string($this->name)) {
             throw new \InvalidArgumentException('The name of the rule must be a string.');
-        }
-
-        #replacement must be defined
-        if (is_null($this->replacement)) {
-            throw new \InvalidArgumentException('The replacement of the rule is unknown.');
         }
     }
 
@@ -160,7 +154,7 @@ class Rule implements RuleInterface
      */
     public function apply($text)
     {
-        while ($condition = each($this->conditions)) {
+        while (list(, $condition) = each($this->conditions)) {
             if (!$condition->appliesTo($text)) {
                 return $text;
             }
@@ -177,6 +171,9 @@ class Rule implements RuleInterface
     protected function setReplacement(array $args)
     {
         $this->replacement = Factory::createReplacement($args);
+        if ($this->replacement instanceof IdentityReplacement) {
+            $this->disabled = true;
+        }
     }
 
     /**
@@ -186,6 +183,6 @@ class Rule implements RuleInterface
      */
     protected function setConditions(array $args)
     {
-        $this->condition = Factory::createConditions($args);
+        $this->conditions = Factory::createConditions($args);
     }
 }

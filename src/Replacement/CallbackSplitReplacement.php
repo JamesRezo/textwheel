@@ -61,4 +61,14 @@ class CallbackSplitReplacement extends Replacement implements ReplacementInterfa
 
         return $text;
     }
+
+    protected function initialize()
+    {
+        if (is_array($this->match)) {
+            throw new \InvalidArgumentException('match argument for split rule can\'t be an array');
+        }
+        if (isset($this->glue) and is_array($this->glue)) {
+            throw new \InvalidArgumentException('glue argument for split rule can\'t be an array');
+        }
+    }
 }

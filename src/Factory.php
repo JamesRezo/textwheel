@@ -22,6 +22,7 @@ namespace TextWheel;
 
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
+use TextWheel\Rule\Rule;
 
 /**
  * TextWheel Factory.
@@ -53,14 +54,14 @@ class Factory
             'replace' => null,
             'match' => '',
             'is_callback' => false,
-            'glue' => null
+            'glue' => null,
         );
 
         $args = array_merge($properties, $args);
         $replacement = array_intersect_key($args, $properties);
 
         if (!isset($replacement['replace'])) {
-            $replacement['type'] = ''; #To fallback TODO disable the rule
+            $replacement['type'] = '';
         }
         
         $replacementClass = 'TextWheel\Replacement\\';
@@ -117,18 +118,11 @@ class Factory
      * @param  string $name  The name of the rule
      * @param  array  $args  Properties of the rule
      *
-     * @return RuleInterface [description]
+     * @return RuleInterface The Rule Object
      */
     public static function createRule($name, array $args)
     {
-        $type = isset($args['type']) ? $args['type'] : 'preg';
-        $class = self::checkRuleType($type);
-
-        if (!class_exists($class)) {
-            throw new \Exception('No such a Rule type.');
-        }
-
-        return new $class($name, $args);
+        return new Rule($name, $args);
     }
 
     /**

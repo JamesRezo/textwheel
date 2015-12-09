@@ -29,58 +29,78 @@ use TextWheel\Test\TestCase;
  */
 class RuleTest extends TestCase
 {
-    public function dataValidArgs()
+    public function dataDisabled()
     {
         $data = array();
 
+        $data['disabled by argument'] = array(
+            true,
+            'Some Rule',
+            array('disabled' => 1),
+        );
+
+        $data['replace property missing'] = array(
+            true,
+            'Some Rule',
+            array('match' => 'text'),
+        );
+
+        $data['unknown type'] = array(
+            true,
+            'Some Rule',
+            array('type' => 'unknown'),
+        );
+
         $data['Preg Rule'] = array(
-            'preg',
-            'Preg',
+            false,
             'a Preg Rule',
-            array('match' => 'text', 'replace' => 'test'),
+            $this->minimalArguments(),
         );
 
         $data['Split with glue'] = array(
-            'split',
-            'Split',
-            'a Split Rule',
-            array('match' => 'text', 'replace' => 'test', 'glue' => 'glue'),
+            false,
+            'Split with glue',
+            array('type' => 'split', 'is_callback' => 1, 'match' => 'text', 'replace' => 'test', 'glue' => 'glue'),
         );
 
         return $data;
     }
 
     /**
-     * @dataProvider dataValidArgs
+     * @dataProvider dataDisabled
      */
-    public function testValidArgs($expected, $type, $name, $args)
+    public function testDisabled($expected, $name, $args)
     {
-        $rule = $this->getRule($type, $name, $args);
+        $rule = $this->getRule($args, $name);
 
-        $this->assertFalse($rule->isDisabled());
-        $this->assertTrue($expected === $rule->getType());
+        $this->assertSame($expected, $rule->isDisabled());
+    }
+
+    public function testDisabledBySetter()
+    {
+        $rule = $this->getRule();
+        $rule->setDisabled();
+
+        $this->assertTrue($rule->isDisabled());
     }
 
     public function dataInvalidArgs()
     {
         $data = array();
 
-        $data['Replace missing'] = array(
-            'Preg',
-            'a Preg Rule',
-            array('match' => 'test'),
+        $data['Name is not a string'] = array(
+            null,
+            $this->minimalArguments(),
         );
 
         $data['Match is an array'] = array(
-            'Split',
-            'a Split Rule',
-            array('match' => array('test1', 'test2'), 'replace' => 'test'),
+            'an Invalid Split Rule',
+            array('type' => 'split', 'is_callback' => 1, 'match' => array('test1', 'test2'), 'replace' => 'test'),
         );
 
         $data['Glue is an array'] = array(
-            'Split',
-            'another Split Rule',
-            array('match' => 'test', 'replace' => 'test', 'glue' => array('glue')),
+            'another Invalid Split Rule',
+            array('type' => 'split', 'is_callback' => 1, 'match' => 'test', 'replace' => 'test', 'glue' => array('glue')),
         );
 
         return $data;
@@ -90,8 +110,40 @@ class RuleTest extends TestCase
      * @expectedException InvalidArgumentException
      * @dataProvider dataInvalidArgs
      */
-    public function testInvalidArgs($type, $name, $args)
+    public function testInvalidArgs($name, $args)
     {
-        $rule = $this->getRule($type, $name, $args);
+        $rule = $this->getRule($args, $name);
+    }
+
+    public function dataPriority()
+    {
+        $data = array();
+
+        $data['Default Priority'] = array(
+            0,
+            $this->minimalArguments(),
+        );
+
+        $data['Fallback Priority'] = array(
+            0,
+            array_merge(array('priority' => 'test'), $this->minimalArguments()),
+        );
+
+        $data['Set Priority'] = array(
+            50,
+            array_merge(array('priority' => 50), $this->minimalArguments()),
+        );
+
+        return $data;
+    }
+
+    /**
+     * @dataProvider dataPriority
+     */
+    public function testPriority($expected, $args)
+    {
+        $rule = $this->getRule($args);
+
+        $this->assertSame($expected, $rule->getPriority());
     }
 }

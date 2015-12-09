@@ -55,28 +55,29 @@ class TestCase extends PHPUnit_Framework_TestCase
         return Factory::createConditions($args);
     }
 
+    protected function minimalArguments()
+    {
+        return array(
+            'match' => '/test/',
+            'replace' => 'text',
+        );
+    }
+
     protected function getReplacement(array $args = array())
     {
         if (empty($args)) {
-            $args = array(
-                'match' => '/test/',
-                'replace' => 'text',
-            );
+            $args = $this->minimalArguments();
         }
 
         return Factory::createReplacement($args);
     }
 
-    protected function getRule($name = 'a PregRule', array $args = array())
+    protected function getRule(array $args = array(), $name = 'a PregRule')
     {
         if (empty($args)) {
-            $args = array(
-                'match' => '/test/',
-                'replace' => 'text',
-            );
+            $args = $this->minimalArguments();
         }
-        $class = 'TextWheel\Rule\\'.$type.'Rule';
 
-        return new $class($name, $args);
+        return Factory::createRule($name, $args);
     }
 }
