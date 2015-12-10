@@ -62,6 +62,11 @@ class CallbackSplitReplacement extends Replacement implements ReplacementInterfa
         return $text;
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
     protected function initialize()
     {
         if (is_array($this->match)) {

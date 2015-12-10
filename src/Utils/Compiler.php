@@ -28,15 +28,31 @@ use TextWheel\Rule\RuleSet;
  */
 class Compiler extends TextWheel
 {
-    public $pick_match = 0; # item to pick for sub-wheel replace
+    /** @var integer item to pick for sub-wheel replace */
+    public $pick_match = 0;
 
+    /** @var array Store for compiled code */
     protected $compiled = array();
 
+    /**
+     * [export description]
+     *
+     * @param  [type] $x [description]
+     *
+     * @return [type]    [description]
+     */
     private function export($x)
     {
         return addcslashes(var_export($x, true), "\n\r\t");
     }
 
+    /**
+     * Compile the replacement and conditions in code.
+     *
+     * @param  string $b a Rule name
+     *
+     * @return string    The compiled code
+     */
     public function compile($b = null)
     {
         $rules = & $this->ruleset->getRules();
@@ -60,16 +76,16 @@ class Compiler extends TextWheel
             $r = "\t/* $name */\n";
 
             if ($rule->require) {
-                $r .= "\t".'require_once '.TextWheel::export($rule->require).';'."\n";
+                $r .= "\t".'require_once '.$this->export($rule->require).';'."\n";
             }
             if ($rule->if_str) {
-                $r .= "\t".'if (strpos($t, '.TextWheel::export($rule->if_str).') === false)'."\n";
+                $r .= "\t".'if (strpos($t, '.$this->export($rule->if_str).') === false)'."\n";
             }
             if ($rule->if_stri) {
-                $r .= "\t".'if (stripos($t, '.TextWheel::export($rule->if_stri).') === false)'."\n";
+                $r .= "\t".'if (stripos($t, '.$this->export($rule->if_stri).') === false)'."\n";
             }
             if ($rule->if_match) {
-                $r .= "\t".'if (preg_match('.TextWheel::export($rule->if_match).', $t))'."\n";
+                $r .= "\t".'if (preg_match('.$this->export($rule->if_match).', $t))'."\n";
             }
 
             if ($rule->func_replace !== 'replaceIdentity') {
@@ -90,7 +106,7 @@ class Compiler extends TextWheel
                     default:
                         break;
                 }
-                $r .= "\t".'$t = '.$fun.'('.TextWheel::export($rule->match).', '.TextWheel::export($rule->replace).', $t);'."\n";
+                $r .= "\t".'$t = '.$fun.'('.$this->export($rule->match).', '.$this->export($rule->replace).', $t);'."\n";
             }
 
             $comp[] = $r;
