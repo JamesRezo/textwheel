@@ -55,10 +55,16 @@ class Factory
             'match' => '',
             'is_callback' => false,
             'glue' => null,
+            'create_replace' => false,
         );
 
         $args = array_merge($properties, $args);
         $replacement = array_intersect_key($args, $properties);
+
+        if ((bool) $replacement['create_replace']) {
+            $replacement['is_callback'] = true;
+            $replacement['replace'] = create_function('$m', $replacement['replace']);
+        }
 
         if (!isset($replacement['replace'])) {
             $replacement['type'] = '';

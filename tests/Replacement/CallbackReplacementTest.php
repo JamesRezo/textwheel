@@ -76,6 +76,11 @@ class CallbackReplacementTest extends TestCase
             array('match' => '/(\w+)/', 'replace' => 'Foo::Baz', 'is_callback' => 1)
         );
 
+        $data['create_replace test'] =array(
+            'Guvf vf n fvzcyr grfg jevggra ol zlfrys',
+            array('match' => '/(\w+)/', 'replace' => 'return str_rot13($m[1]);', 'create_replace' => 1)
+        );
+
         return $data;
     }
 
