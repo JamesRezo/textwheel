@@ -95,7 +95,7 @@ class FactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             'TextWheel\Replacement\CallbackPregReplacement',
-            Factory::createReplacement(array('replace' => 'function', 'is_callback' => 'Y'))
+            Factory::createReplacement(array('replace' => 'function', 'is_callback' => true))
         );
     }
 }

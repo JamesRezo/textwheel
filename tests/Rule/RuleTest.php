@@ -60,7 +60,7 @@ class RuleTest extends TestCase
         $data['Split with glue'] = array(
             false,
             'Split with glue',
-            array('type' => 'split', 'is_callback' => 1, 'match' => 'text', 'replace' => 'test', 'glue' => 'glue'),
+            array('type' => 'split', 'is_callback' => true, 'match' => 'text', 'replace' => 'test', 'glue' => 'glue'),
         );
 
         return $data;
@@ -95,12 +95,12 @@ class RuleTest extends TestCase
 
         $data['Match is an array'] = array(
             'an Invalid Split Rule',
-            array('type' => 'split', 'is_callback' => 1, 'match' => array('test1', 'test2'), 'replace' => 'test'),
+            array('type' => 'split', 'is_callback' => true, 'match' => array('test1', 'test2'), 'replace' => 'test'),
         );
 
         $data['Glue is an array'] = array(
             'another Invalid Split Rule',
-            array('type' => 'split', 'is_callback' => 1, 'match' => 'test', 'replace' => 'test', 'glue' => array('glue')),
+            array('type' => 'split', 'is_callback' => true, 'match' => 'test', 'replace' => 'test', 'glue' => array('glue')),
         );
 
         return $data;
