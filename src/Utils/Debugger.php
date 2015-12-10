@@ -18,14 +18,14 @@
  *
  */
 
-namespace TextWheel\Test;
+namespace TextWheel\Utils;
 
 use TextWheel\TextWheel;
 
 /**
  * Debug TextWheel Object.
  */
-class Debug extends TextWheel
+class Debugger extends TextWheel
 {
     protected static $t; #tableaux des temps
     protected static $tu; #tableaux des temps (rules utilises)
