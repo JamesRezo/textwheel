@@ -81,6 +81,8 @@ class RuleSet extends Rule implements RuleInterface
      */
     public function apply($text)
     {
+        $text = parent::apply($text);
+
         $this->sort();
 
         foreach ($this->rules as $name => $rule) {
