@@ -126,7 +126,7 @@ class Factory
      *
      * @return RuleInterface The Rule Object
      */
-    public static function createRule($name, array $args)
+    public static function createRule(array $args, $name = '0')
     {
         return new Rule($name, $args);
     }

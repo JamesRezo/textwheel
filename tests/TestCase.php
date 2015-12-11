@@ -78,6 +78,6 @@ class TestCase extends PHPUnit_Framework_TestCase
             $args = $this->minimalArguments();
         }
 
-        return Factory::createRule($name, $args);
+        return Factory::createRule($args, $name);
     }
 }
