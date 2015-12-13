@@ -23,6 +23,7 @@ namespace TextWheel;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use TextWheel\Rule\Rule;
+use TextWheel\Rule\RuleSet;
 
 /**
  * TextWheel Factory.
@@ -34,7 +35,7 @@ class Factory
      *
      * @param array $args Properties of the rule
      *
-     * @return ReplacementInterface a Replacement Object (Identify as fallback)
+     * @return ReplacementInterface a Replacement Object (Identity as fallback)
      */
     public static function createReplacement($args)
     {
@@ -53,8 +54,8 @@ class Factory
             'type' => 'preg',
             'replace' => null,
             'match' => '',
-            'is_callback' => false,
             'glue' => null,
+            'is_callback' => false,
             'create_replace' => false,
         );
 
@@ -132,6 +133,28 @@ class Factory
     }
 
     /**
+     * RuleSet Builder.
+     *
+     * @param  array   $rules Rules arguments as an array
+     * @return RuleSet        The RuleSet
+     */
+    public static function buildRuleSet(array $args, $name = '0')
+    {
+        if (isset($args['is_wheel']) and $args['is_wheel']) {
+            $wheels = $args['replace'];
+            $args['create_replace'] = true;
+            $rules = new RuleSet($name, $args);
+            foreach ($wheels as $name => $wheel) {
+                $rules->add(self::buildRuleSet($wheel, $name));
+            }
+        } else {
+            $rules = self::createRule($args, $name);
+        }
+
+        return $rules;
+    }
+
+    /**
      * file finder : can be overloaded in order to use application dependant
      * path find method
      *
@@ -199,24 +222,5 @@ class Factory
             $rules[] = array('require' => $f, 'priority' => -1000);
         }
         return $rules;
-    }
-
-    /**
-     * public static loader
-     * can be overloaded to use memoization
-     *
-     * @param array $ruleset
-     * @param string $callback
-     * @param string $class
-     * @return class
-     */
-    public static function getRuleSet($ruleset, $callback = '', $class = 'TextWheel\Rule\RuleSet')
-    {
-        $ruleset = new $class($ruleset);
-        if ($callback) {
-            $callback($ruleset);
-        }
-
-        return $ruleset;
     }
 }

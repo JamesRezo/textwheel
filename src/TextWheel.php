@@ -20,6 +20,7 @@
 
 namespace TextWheel;
 
+use TextWheel\Factory;
 use TextWheel\Rule\RuleSet;
 
 /**
@@ -35,7 +36,7 @@ class TextWheel
      *
      * @param RuleSet $ruleset
      */
-    public function __construct(RuleSet $ruleset = null)
+    public function __construct()
     {
         $this->setRuleSet($ruleset);
     }
@@ -46,8 +47,8 @@ class TextWheel
      */
     public function setRuleSet(RuleSet $ruleset = null)
     {
-        if (!is_object($ruleset)) {
-            $ruleset = new RuleSet();
+        if (!($ruleset instanceof RuleSet)) {
+            $ruleset = Factory::buildRuleSet($ruleset);
         }
         $this->ruleset = $ruleset;
 

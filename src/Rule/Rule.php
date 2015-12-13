@@ -80,8 +80,12 @@ class Rule implements RuleInterface
     protected function checkValidity()
     {
         #name must be a string
-        if (!is_string($this->name)) {
-            throw new \InvalidArgumentException('The name of the rule must be a string.');
+        if (!is_scalar($this->name)) {
+            throw new \InvalidArgumentException(
+                'The name of the rule must be a scalar.'.
+                var_export($this->name, true).
+                '('.gettype($this->name).')'
+            );
         }
     }
 
