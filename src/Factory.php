@@ -24,6 +24,7 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
 use TextWheel\Rule\Rule;
 use TextWheel\Rule\RuleSet;
+use TextWheel\Replacement\Wheel;
 
 /**
  * TextWheel Factory.
@@ -57,14 +58,37 @@ class Factory
             'glue' => null,
             'is_callback' => false,
             'create_replace' => false,
+            'is_wheel' => false,
+            'pick_match' => 0,
         );
 
         $args = array_merge($properties, $args);
         $replacement = array_intersect_key($args, $properties);
 
+        if ((bool) $replacement['is_wheel']) {
+            $wheel = new Wheel();
+            foreach ($replacement['replace'] as $subwheel) {
+                $wheel->add(self::createReplacement($subwheel));
+            }
+
+            $replacement['replace'] = function ($matches) use ($wheel, $replacement) {
+                $matches = ('preg' !== $replacement['type'] or !isset($replacement['match'])) ?
+                    $matches :
+                    $matches[intval($replacement['pick_match'])];
+                return $wheel->replace($matches);
+            };
+
+            $replacement['is_callback'] = true;
+            $replacement['create_replace'] = false;
+        }
+
         if ((bool) $replacement['create_replace']) {
             $replacement['is_callback'] = true;
-            $replacement['replace'] = create_function('$m', $replacement['replace']);
+            $code = $replacement['replace'];
+            //$replacement['replace'] = create_function('$matches', $code);
+            $replacement['replace'] = function ($matches) use ($code) {
+                return eval($code); //TODO eval() is huge.
+            };
         }
 
         if (!isset($replacement['replace'])) {
@@ -142,7 +166,6 @@ class Factory
     {
         if (isset($args['is_wheel']) and $args['is_wheel']) {
             $wheels = $args['replace'];
-            $args['create_replace'] = true;
             $rules = new RuleSet($name, $args);
             foreach ($wheels as $name => $wheel) {
                 $rules->add(self::buildRuleSet($wheel, $name));

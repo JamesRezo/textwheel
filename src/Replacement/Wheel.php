@@ -21,38 +21,19 @@
 namespace TextWheel\Replacement;
 
 /**
- * Base Replacement Object.
+ * Composite Replacement Object.
  */
-abstract class Replacement implements ReplacementInterface
+class Wheel implements ReplacementInterface
 {
-    /** @var array|string replacements */
-    protected $replace;
-
-    /** @var array|string patterns to replace */
-    protected $match;
+    /** @var Replacement[] List of replacements or wheels */
+    private $replacements;
 
     /**
-     * Base constructor.
-     *
-     * @param array $args
+     * Wheel constructor.
      */
-    public function __construct(array $args)
+    public function __construct()
     {
-        foreach ($args as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->$key = $value;
-            }
-        }
-        $this->initialize();
-    }
-
-    /**
-     * Sets custom properties for the rule.
-     *
-     * @return void
-     */
-    protected function initialize()
-    {
+        $this->replacements = array();
     }
 
     /**
@@ -62,6 +43,8 @@ abstract class Replacement implements ReplacementInterface
      */
     public function add(ReplacementInterface $replacement)
     {
+        $this->replacements[] = $replacement;
+
         return $this;
     }
 
@@ -74,5 +57,12 @@ abstract class Replacement implements ReplacementInterface
      *
      * @return string       The output text
      */
-    abstract public function replace($text);
+    public function replace($text)
+    {
+        foreach ($this->replacements as $replacement) {
+            $text = $replacement->replace($text);
+        }
+
+        return $text;
+    }
 }

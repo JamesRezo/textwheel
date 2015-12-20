@@ -24,9 +24,9 @@ use TextWheel\TextWheel;
 use TextWheel\Rule\RuleSet;
 
 /**
- * The Main object of the libray.
+ * Rule Compiler
  */
-class Compiler extends TextWheel
+class Compiler
 {
     /** @var integer item to pick for sub-wheel replace */
     public $pick_match = 0;

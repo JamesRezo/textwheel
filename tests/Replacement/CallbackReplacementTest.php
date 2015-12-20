@@ -76,9 +76,38 @@ class CallbackReplacementTest extends TestCase
             array('match' => '/(\w+)/', 'replace' => 'Foo::Baz', 'is_callback' => true)
         );
 
-        $data['create_replace test'] =array(
+        $data['create_replace test'] = array(
             'Guvf vf n fvzcyr grfg jevggra ol zlfrys',
-            array('match' => '/(\w+)/', 'replace' => 'return str_rot13($m[1]);', 'create_replace' => true)
+            array('match' => '/(\w+)/', 'replace' => 'return str_rot13($matches[1]);', 'create_replace' => true)
+        );
+
+        $data['is_wheel test'] = array(
+            '(This) (is) (a) (simple) (test) (written) (by) (myself)',
+            array('is_wheel' => true, 'match' => '/(\w+)/', 'replace' => array(array(
+                'type' => 'all',
+                'replace' => '($0)',
+            ))),
+        );
+
+        $data['is_wheel test2'] = array(
+            '(This) (is) (a) (second) (artwork) (written) (by) (myself)',
+            array('is_wheel' => true, 'type' => 'split', 'match' => ' ', 'replace' => array(
+                0 => array(
+                    'type' => 'all',
+                    'replace' => '($0)',
+                ),
+                1 => array(
+                    'type' => 'str',
+                    'match' => array('test', 'simple'),
+                    'replace' => array('text', 'second'),
+                ),
+                2 => array(
+                    'match' => '/text/',
+                    'replace' => 'artwork',
+                    'if_str' => 'by myself',
+                    //'priority' => -1
+                ),
+            )),
         );
 
         return $data;

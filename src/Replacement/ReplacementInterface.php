@@ -35,4 +35,11 @@ interface ReplacementInterface
      * @return string       The output text
      */
     public function replace($text);
+
+    /**
+     * Adds a replacement to Composite Replacement object.
+     *
+     * @param ReplacementInterface $replacemet a Replacement to add
+     */
+    public function add(ReplacementInterface $replacement);
 }
