@@ -68,6 +68,16 @@ class ConditionTest extends TestCase
             array('if_str' => "\n"),
         );
 
+        $data['Has listed chars but does not contain an EOL'] = array(
+            false,
+            array('if_str' => "\n", 'if_chars' => 'aeiy'),
+        );
+
+        $data['Has listed chars and contains a string'] = array(
+            true,
+            array('if_str' => 'myself', 'if_chars' => 'aeiy'),
+        );
+
         return $data;
     }
 
@@ -78,6 +88,10 @@ class ConditionTest extends TestCase
     {
         $conditions = $this->getConditions($args);
 
-        $this->assertSame($expected, $conditions[0]->appliesTo($this->text));
+        $pass = true;
+        foreach ($conditions as $condition) {
+            $pass = ($pass and $condition->appliesTo($this->text));
+        }
+        $this->assertSame($expected, $pass);
     }
 }
