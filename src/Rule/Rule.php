@@ -42,7 +42,7 @@ class Rule implements RuleInterface
     /** @var ConditionInterface[]       Conditions to apply optionaly to the rule */
     protected $conditions = array();
 
-    /** @var ReplacementnInterface|null Replacement to apply to the rule */
+    /** @var ReplacementInterface|null  Replacement to apply to the rule */
     protected $replacement = null;
 
     /**
