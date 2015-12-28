@@ -21,7 +21,6 @@
 namespace TextWheel\Utils;
 
 use TextWheel\TextWheel;
-use TextWheel\Rule\RuleSet;
 
 /**
  * Rule Compiler
@@ -69,6 +68,7 @@ class Compiler
                 and $fun = $this->compiled[$rule->replace]
             ) {
                 $pre[] = "\n###\n## $name\n###\n" . $fun;
+                $r = array();
                 preg_match(',function (\w+), ', $fun, $r);
                 $rule->compilereplace = $r[1]; # ne pas modifier ->replace sinon on casse l'execution...
             }

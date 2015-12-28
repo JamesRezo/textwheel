@@ -21,6 +21,7 @@
 namespace TextWheel;
 
 use TextWheel\Factory;
+use TextWheel\Replacement\Wheel;
 
 /**
  * The Main object of the libray.
@@ -30,6 +31,11 @@ class TextWheel
     /** @var Wheel The Rules */
     protected $ruleset;
 
+    /**
+     * Base TextWheel Contructor.
+     *
+     * @param string|array $ruleset a file or an array of rules
+     */
     public function __construct($ruleset)
     {
         if (is_file($ruleset)) {
@@ -37,8 +43,10 @@ class TextWheel
         }
 
         if (!is_array($ruleset)) {
-            throw new InvalidArgumentException("Error Processing Request", 1);
+            throw new \InvalidArgumentException("Error Processing Request", 1);
         }
+
+        $name = isset($ruleset['name']) ? $ruleset['name'] : '';
 
         $this->ruleset = new Wheel($name, $ruleset);
     }

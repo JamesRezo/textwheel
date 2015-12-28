@@ -22,8 +22,6 @@ namespace TextWheel;
 
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Exception\ParseException;
-use TextWheel\Rule\Rule;
-use TextWheel\Rule\RuleSet;
 use TextWheel\Replacement\Wheel;
 
 /**
@@ -32,13 +30,14 @@ use TextWheel\Replacement\Wheel;
 class Factory
 {
     /**
-     * Creates a Replacement object.
+     * { function_description }
      *
-     * @param array $args Properties of the rule
-     *
-     * @return ReplacementInterface a Replacement Object (Identity as fallback)
+     * @param  string  $type         (description)
+     * @param  boolean $is_callback  (description)
+     * 
+     * @return string  Class name
      */
-    public static function createReplacement($args, $name = '0')
+    private static function buildReplacementClass($type, $is_callback)
     {
         static $replacements = array(
             'preg' => 'PregReplacement',
@@ -51,7 +50,30 @@ class Factory
             'str_cb' => 'CallbackStrReplacement',
         );
 
-        static $properties = array(
+        $replacementClass = 'TextWheel\Replacement\\';
+        if ($is_callback) {
+            $type = preg_replace('/^(preg|all|split|str)(_cb)?$/', '$1_cb', $type);
+        }
+
+        $replacementClass .= array_key_exists($type, $replacements) ?
+            $replacements[$type] :
+            'IdentityReplacement'
+        ;
+
+        return $replacementClass;
+    }
+
+    /**
+     * Creates a Replacement object.
+     *
+     * @param array  $args Properties of the rule
+     * @param string $name The name of the rule
+     *
+     * @return ReplacementInterface a Replacement Object (Identity as fallback)
+     */
+    public static function createReplacement($args, $name = '')
+    {
+        static $defaultProperties = array(
             'type' => 'preg',
             'replace' => null,
             'match' => '',
@@ -62,13 +84,13 @@ class Factory
             'pick_match' => 0,
         );
 
-        $args = array_merge($properties, $args);
-        $replacement = array_intersect_key($args, $properties);
+        $args = array_merge($defaultProperties, $args);
+        $replacement = array_intersect_key($args, $defaultProperties);
 
         if ((bool) $replacement['is_wheel']) {
             $wheel = new Wheel($name, $args);
-            foreach ($replacement['replace'] as $subwheel) {
-                $wheel->add(self::createReplacement($subwheel));
+            foreach ($replacement['replace'] as $subname => $subwheel) {
+                $wheel->add(self::createReplacement($subwheel, $subname));
             }
 
             $replacement['replace'] = function ($matches) use ($wheel, $replacement) {
@@ -85,25 +107,14 @@ class Factory
         if ((bool) $replacement['create_replace']) {
             $replacement['is_callback'] = true;
             $code = $replacement['replace'];
-            //$replacement['replace'] = create_function('$matches', $code);
-            $replacement['replace'] = function ($matches) use ($code) {
-                return eval($code); //TODO eval() is huge.
-            };
+            $replacement['replace'] = create_function('$matches', $code);
         }
 
         if (!isset($replacement['replace'])) {
             $replacement['type'] = '';
         }
-        
-        $replacementClass = 'TextWheel\Replacement\\';
-        if ($replacement['is_callback']) {
-            $replacement['type'] = preg_replace('/^(preg|all|split|str)(_cb)?$/', '$1_cb', $replacement['type']);
-        }
-
-        $replacementClass .= array_key_exists($replacement['type'], $replacements) ?
-            $replacements[$replacement['type']] :
-            'IdentityReplacement'
-        ;
+ 
+        $replacementClass = self::buildReplacementClass($replacement['type'], $replacement['is_callback']);
 
         return new $replacementClass($name, $replacement);
     }

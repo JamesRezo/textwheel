@@ -90,14 +90,14 @@ class Debugger extends TextWheel
             $this->timer($name);
             $b = $t;
             $this->apply($rule, $t);
-            TextWheelDebug::$w[$name] ++; # nombre de fois appliquee
+            Debugger::$w[$name] ++; # nombre de fois appliquee
             $v = $this->timer($name, true); # timer
-            TextWheelDebug::$t[$name] += $v;
+            Debugger::$t[$name] += $v;
             if ($t !== $b) {
-                TextWheelDebug::$u[$name] ++; # nombre de fois utile
-                TextWheelDebug::$tu[$name] += $v;
+                Debugger::$u[$name] ++; # nombre de fois utile
+                Debugger::$tu[$name] += $v;
             } else {
-                TextWheelDebug::$tnu[$name] += $v;
+                Debugger::$tnu[$name] += $v;
             }
         }
         #foreach ($this->rules as &$rule) #smarter &reference, but php5 only
@@ -110,8 +110,8 @@ class Debugger extends TextWheel
      */
     public static function outputDebug()
     {
-        if (isset(TextWheelDebug::$t)) {
-            $time = array_flip(array_map('strval', TextWheelDebug::$t));
+        if (isset(Debugger::$t)) {
+            $time = array_flip(array_map('strval', Debugger::$t));
             krsort($time);
             echo "
             <div class='textwheeldebug'>
@@ -131,16 +131,16 @@ class Debugger extends TextWheel
             <thead><tr><th>temps&nbsp;(ms)</th><th>rule</th><th>application</th><th>t/u&nbsp;(ms)</th><th>t/n-u&nbsp;(ms)</th></tr></thead>\n";
             $total = 0;
             foreach ($time as $t => $r) {
-                $applications = intval(TextWheelDebug::$u[$r]);
+                $applications = intval(Debugger::$u[$r]);
                 $total += $t;
                 if (intval($t*10)) {
                     echo "<tr>
                     <td class='number strong'>".number_format(round($t*10)/10, 1)."</td><td> ".spip_htmlspecialchars($r)."</td>
                     <td"
                     . (!$applications ? " class='zero'" : "")
-                    .">".$applications."/".intval(TextWheelDebug::$w[$r])."</td>
-                    <td class='number'>".($applications?number_format(round(TextWheelDebug::$tu[$r]/$applications*100)/100, 2):"") ."</td>
-                    <td class='number'>".(($nu = intval(TextWheelDebug::$w[$r])-$applications)?number_format(round(TextWheelDebug::$tnu[$r]/$nu*100)/100, 2):"") ."</td>
+                    .">".$applications."/".intval(Debugger::$w[$r])."</td>
+                    <td class='number'>".($applications?number_format(round(Debugger::$tu[$r]/$applications*100)/100, 2):"") ."</td>
+                    <td class='number'>".(($nu = intval(Debugger::$w[$r])-$applications)?number_format(round(Debugger::$tnu[$r]/$nu*100)/100, 2):"") ."</td>
                     </tr>";
                 }
             }
@@ -151,7 +151,7 @@ class Debugger extends TextWheel
             <caption>Temps total par rule</caption>
             <thead><tr><th>temps</th><th>rule</th></tr></thead>\n";
             ksort($GLOBALS['totaux']);
-            TextWheelDebug::outputTotal($GLOBALS['totaux']);
+            Debugger::outputTotal($GLOBALS['totaux']);
             echo "</table>";
             # somme des temps des rules, ne tient pas compte des subwheels
             echo "<p>temps total rules: ".round($total)."&nbsp;ms</p>\n";
@@ -164,7 +164,7 @@ class Debugger extends TextWheel
         ksort($liste);
         foreach ($liste as $cause => $duree) {
             if (is_array($duree)) {
-                TextWheelDebug::outputTotal($duree, $profondeur+1);
+                Debugger::outputTotal($duree, $profondeur+1);
             } else {
                 echo "<tr class='prof-$profondeur'>
                     <td class='number'><b>".intval($duree)."</b>&nbsp;ms</td>
@@ -181,6 +181,6 @@ class Debugger extends TextWheel
      */
     protected function &createSubWheel(&$rules)
     {
-        return new TextWheelDebug($rules);
+        return new Debugger($rules);
     }
 }

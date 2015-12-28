@@ -21,7 +21,6 @@
 namespace TextWheel\Test\Replacement;
 
 use TextWheel\Test\TestCase;
-use TextWheel\Factory;
 
 #use TextWheel\Replacement\IdendityReplacement;
 

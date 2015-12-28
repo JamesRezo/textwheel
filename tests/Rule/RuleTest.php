@@ -112,7 +112,7 @@ class RuleTest extends TestCase
      */
     public function testInvalidArgs($name, $args)
     {
-        $rule = $this->getReplacement($args, $name);
+        $this->getReplacement($args, $name);
     }
 
     public function dataPriority()

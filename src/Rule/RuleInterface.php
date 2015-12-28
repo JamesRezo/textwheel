@@ -37,7 +37,7 @@ interface RuleInterface
      *
      * @return integer The priority of the rule
      *
-     * @see RuleSet::sort()
+     * @see Wheel::sort()
      */
     public function getPriority();
 
