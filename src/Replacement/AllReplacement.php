@@ -32,7 +32,7 @@ class AllReplacement extends Replacement implements ReplacementInterface
      *
      * @return string       The output text
      */
-    public function replace($text)
+    protected function replace($text)
     {
         # special case: replace $0 with $t
         #   replace: "A$0B" will surround the string with A..B

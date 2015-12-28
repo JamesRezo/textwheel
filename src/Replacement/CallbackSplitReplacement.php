@@ -37,9 +37,9 @@ class CallbackSplitReplacement extends Replacement implements ReplacementInterfa
      *
      * @param array  $args Properties of the rule
      */
-    public function __construct(array $args)
+    public function __construct($name, array $args)
     {
-        parent::__construct($args);
+        parent::__construct($name, $args);
 
         $this->match = array(
             $this->match,
@@ -54,7 +54,7 @@ class CallbackSplitReplacement extends Replacement implements ReplacementInterfa
      *
      * @return string       The output text
      */
-    public function replace($text)
+    protected function replace($text)
     {
         $splitText = explode($this->match[0], $text);
         $text = join($this->match[1], array_map($this->replace, $splitText));

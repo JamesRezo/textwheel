@@ -32,7 +32,7 @@ class SplitReplacement extends Replacement implements ReplacementInterface
      *
      * @throws RuntimeException Need a Callback
      */
-    public function replace($text)
+    protected function replace($text)
     {
         throw new \RuntimeException('split rule always needs a callback function as replace');
     }

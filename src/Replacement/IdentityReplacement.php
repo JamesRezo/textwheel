@@ -32,7 +32,7 @@ class IdentityReplacement extends Replacement implements ReplacementInterface
      *
      * @return string       The output text
      */
-    public function replace($text)
+    protected function replace($text)
     {
         return $text;
     }

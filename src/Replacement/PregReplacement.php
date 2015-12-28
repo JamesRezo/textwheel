@@ -34,7 +34,7 @@ class PregReplacement extends Replacement implements ReplacementInterface
      *
      * @return string           The output text
      */
-    public function replace($text)
+    protected function replace($text)
     {
         $text = preg_replace($this->match, $this->replace, $text, -1);
 

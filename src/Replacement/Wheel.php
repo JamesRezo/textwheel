@@ -20,19 +20,29 @@
 
 namespace TextWheel\Replacement;
 
+use TextWheel\Rule\AbstractRule;
+
 /**
  * Composite Replacement Object.
  */
-class Wheel implements ReplacementInterface
+class Wheel extends AbstractRule implements ReplacementInterface
 {
     /** @var Replacement[] List of replacements or wheels */
     private $replacements;
 
+    /** @var boolean true if the list is sorted by priority */
+    private $sorted = true;
+
     /**
      * Wheel constructor.
+     *
+     * @param string $name The name of the rule
+     * @param array  $args Properties of the rule
      */
-    public function __construct()
+    public function __construct($name, array $args)
     {
+        parent::__construct($name, $args);
+
         $this->replacements = array();
     }
 
@@ -43,7 +53,8 @@ class Wheel implements ReplacementInterface
      */
     public function add(ReplacementInterface $replacement)
     {
-        $this->replacements[] = $replacement;
+        $this->replacements[$replacement->getName()] = $replacement;
+        $this->sorted = false;
 
         return $this;
     }
@@ -57,12 +68,38 @@ class Wheel implements ReplacementInterface
      *
      * @return string       The output text
      */
-    public function replace($text)
+    public function apply($text)
     {
+        $this->sort();
+
         foreach ($this->replacements as $replacement) {
-            $text = $replacement->replace($text);
+            $text = $replacement->apply($text);
         }
 
         return $text;
+    }
+
+    /**
+     * Sort rules according to priority and purge disabled rules.
+     */
+    protected function sort()
+    {
+        if (!$this->sorted) {
+            $sortedRules = array();
+            foreach ($this->replacements as $name => $replacement) {
+                if (!$replacement->isDisabled()) {
+                    $sortedRules[$replacement->getPriority()][$name] = $replacement;
+                }
+            }
+            ksort($sortedRules, SORT_NUMERIC);
+            $this->replacements = array();
+            foreach ($sortedRules as $replacements) {
+                $this->replacements += $replacements;
+            }
+
+            $this->sorted = true;
+        }
+
+        return $this;
     }
 }

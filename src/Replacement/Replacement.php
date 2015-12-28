@@ -20,29 +20,35 @@
 
 namespace TextWheel\Replacement;
 
+use TextWheel\Rule\AbstractRule;
+
 /**
  * Base Replacement Object.
  */
-abstract class Replacement implements ReplacementInterface
+abstract class Replacement extends AbstractRule implements ReplacementInterface
 {
-    /** @var array|string replacements */
+    /** @var array|string         Replacements */
     protected $replace;
 
-    /** @var array|string patterns to replace */
+    /** @var array|string         Patterns to replace */
     protected $match;
 
     /**
-     * Base constructor.
+     * Base Replacement constructor.
      *
-     * @param array $args
+     * @param string $name The name of the rule
+     * @param array  $args Properties of the rule
      */
-    public function __construct(array $args)
+    public function __construct($name, array $args)
     {
+        parent::__construct($name, $args);
+
         foreach ($args as $key => $value) {
             if (property_exists($this, $key)) {
                 $this->$key = $value;
             }
         }
+
         $this->initialize();
     }
 
@@ -54,6 +60,17 @@ abstract class Replacement implements ReplacementInterface
     protected function initialize()
     {
     }
+
+    /**
+     * The effective replacement.
+     *
+     * @param  string $text The input text
+     *
+     * @throws Exception    In case the replacement cannot compute
+     *
+     * @return string       The output text
+     */
+    abstract protected function replace($text);
 
     /**
      * {@inheritdoc}
@@ -70,9 +87,18 @@ abstract class Replacement implements ReplacementInterface
      *
      * @param  string $text The input text
      *
-     * @throws Exception    In case the replacement cannot compute
+     * @throws Exception    In case the replacement cannot work
      *
      * @return string       The output text
      */
-    abstract public function replace($text);
+    public function apply($text)
+    {
+        foreach ($this->conditions as $condition) {
+            if (!$condition->appliesTo($text)) {
+                return $text;
+            }
+        }
+
+        return $this->replace($text);
+    }
 }

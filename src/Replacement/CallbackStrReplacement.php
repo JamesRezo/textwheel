@@ -32,7 +32,7 @@ class CallbackStrReplacement extends Replacement implements ReplacementInterface
      *
      * @return string       The output text
      */
-    public function replace($text)
+    protected function replace($text)
     {
         if (strpos($text, $this->match) !== false) {
             if (count($b = explode($this->match, $text)) > 1) {

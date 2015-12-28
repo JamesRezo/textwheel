@@ -22,6 +22,7 @@ namespace TextWheel\Test;
 
 use PHPUnit_Framework_TestCase;
 use TextWheel\Factory;
+use TextWheel\Test\fixtures\RuleTest;
 
 /**
  * Main tests case.
@@ -63,21 +64,17 @@ class TestCase extends PHPUnit_Framework_TestCase
         );
     }
 
-    protected function getReplacement(array $args = array())
+    protected function getReplacement(array $args = array(), $name = 'a PregRule')
     {
         if (empty($args)) {
             $args = $this->minimalArguments();
         }
 
-        return Factory::createReplacement($args);
+        return Factory::createReplacement($args, $name);
     }
 
-    protected function getRule(array $args = array(), $name = 'a PregRule')
+    protected function getRule($args)
     {
-        if (empty($args)) {
-            $args = $this->minimalArguments();
-        }
-
-        return Factory::createRule($args, $name);
+        return new RuleTest('RuleTest', $args);
     }
 }

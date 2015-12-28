@@ -21,38 +21,26 @@
 namespace TextWheel;
 
 use TextWheel\Factory;
-use TextWheel\Rule\RuleSet;
 
 /**
  * The Main object of the libray.
  */
 class TextWheel
 {
-    /** @var RuleSet The Rules */
+    /** @var Wheel The Rules */
     protected $ruleset;
 
-    /**
-     * Constructor.
-     *
-     * @param RuleSet $ruleset
-     */
-    public function __construct()
+    public function __construct($ruleset)
     {
-        $this->setRuleSet($ruleset);
-    }
-
-    /**
-     * Set RuleSet
-     * @param TextWheelRuleSet $ruleset
-     */
-    public function setRuleSet(RuleSet $ruleset = null)
-    {
-        if (!($ruleset instanceof RuleSet)) {
-            $ruleset = Factory::buildRuleSet($ruleset);
+        if (is_file($ruleset)) {
+            $ruleset = Factory::loadFile($ruleset);
         }
-        $this->ruleset = $ruleset;
 
-        return $this;
+        if (!is_array($ruleset)) {
+            throw new InvalidArgumentException("Error Processing Request", 1);
+        }
+
+        $this->ruleset = new Wheel($name, $ruleset);
     }
 
     /**

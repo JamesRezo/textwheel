@@ -66,7 +66,7 @@ class ApplyRuleTest extends TestCase
      */
     public function testNominalCase($expected, $args)
     {
-        $rule = $this->getRule($args);
+        $rule = $this->getReplacement($args);
         $this->assertSame($expected, $rule->apply($this->text));
     }
 }

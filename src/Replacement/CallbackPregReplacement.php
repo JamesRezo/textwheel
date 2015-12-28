@@ -34,7 +34,7 @@ class CallbackPregReplacement extends Replacement implements ReplacementInterfac
      *
      * @return string           The output text
      */
-    public function replace($text)
+    protected function replace($text)
     {
         $text = preg_replace_callback($this->match, $this->replace, $text, -1);
 

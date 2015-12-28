@@ -91,7 +91,7 @@ class ReplacementTest extends TestCase
     {
         $replacement = $this->getReplacement($args);
 
-        $this->assertSame($expected, $replacement->replace($this->text));
+        $this->assertSame($expected, $replacement->apply($this->text));
     }
 
     /**
@@ -100,6 +100,6 @@ class ReplacementTest extends TestCase
     public function testSplitReplacement()
     {
         $replacement = $this->getReplacement(array('type' => 'split', 'replace' => ''));
-        $replacement->replace('');
+        $replacement->apply('');
     }
 }

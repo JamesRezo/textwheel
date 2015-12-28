@@ -36,7 +36,7 @@ class RuleTest extends TestCase
         $data['disabled by argument'] = array(
             true,
             'Some Rule',
-            array('disabled' => 1),
+            array('disabled' => true),
         );
 
         $data['replace property missing'] = array(
@@ -71,14 +71,14 @@ class RuleTest extends TestCase
      */
     public function testDisabled($expected, $name, $args)
     {
-        $rule = $this->getRule($args, $name);
+        $rule = $this->getReplacement($args, $name);
 
         $this->assertSame($expected, $rule->isDisabled());
     }
 
     public function testDisabledBySetter()
     {
-        $rule = $this->getRule();
+        $rule = $this->getReplacement();
         $rule->setDisabled();
 
         $this->assertTrue($rule->isDisabled());
@@ -112,7 +112,7 @@ class RuleTest extends TestCase
      */
     public function testInvalidArgs($name, $args)
     {
-        $rule = $this->getRule($args, $name);
+        $rule = $this->getReplacement($args, $name);
     }
 
     public function dataPriority()

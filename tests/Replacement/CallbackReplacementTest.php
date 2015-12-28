@@ -123,6 +123,6 @@ class CallbackReplacementTest extends TestCase
 
         $replacement = $this->getReplacement($args);
 
-        $this->assertSame($expected, $replacement->replace($this->text));
+        $this->assertSame($expected, $replacement->apply($this->text));
     }
 }

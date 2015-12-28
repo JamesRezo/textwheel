@@ -26,20 +26,20 @@ namespace TextWheel\Replacement;
 interface ReplacementInterface
 {
     /**
-     * The effective replacement.
-     *
-     * @param  string $text The input text
-     *
-     * @throws Exception    In case the replacement cannot compute
-     *
-     * @return string       The output text
-     */
-    public function replace($text);
-
-    /**
      * Adds a replacement to Composite Replacement object.
      *
      * @param ReplacementInterface $replacemet a Replacement to add
      */
     public function add(ReplacementInterface $replacement);
+
+    /**
+     * The conditional application of replacement.
+     *
+     * @param  string $text     The input text
+     *
+     * @throws RuntimeException In case the replacement cannot compute
+     *
+     * @return string           The output text
+     */
+    public function apply($text);
 }

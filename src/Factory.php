@@ -38,7 +38,7 @@ class Factory
      *
      * @return ReplacementInterface a Replacement Object (Identity as fallback)
      */
-    public static function createReplacement($args)
+    public static function createReplacement($args, $name = '0')
     {
         static $replacements = array(
             'preg' => 'PregReplacement',
@@ -66,7 +66,7 @@ class Factory
         $replacement = array_intersect_key($args, $properties);
 
         if ((bool) $replacement['is_wheel']) {
-            $wheel = new Wheel();
+            $wheel = new Wheel($name, $args);
             foreach ($replacement['replace'] as $subwheel) {
                 $wheel->add(self::createReplacement($subwheel));
             }
@@ -75,7 +75,7 @@ class Factory
                 $matches = ('preg' !== $replacement['type'] or !isset($replacement['match'])) ?
                     $matches :
                     $matches[intval($replacement['pick_match'])];
-                return $wheel->replace($matches);
+                return $wheel->apply($matches);
             };
 
             $replacement['is_callback'] = true;
@@ -105,7 +105,7 @@ class Factory
             'IdentityReplacement'
         ;
 
-        return new $replacementClass($replacement);
+        return new $replacementClass($name, $replacement);
     }
 
     /**
@@ -141,40 +141,6 @@ class Factory
         }
 
         return array_values($set);
-    }
-
-    /**
-     * Creates a Rule object.
-     *
-     * @param  string $name  The name of the rule
-     * @param  array  $args  Properties of the rule
-     *
-     * @return RuleInterface The Rule Object
-     */
-    public static function createRule(array $args, $name = '0')
-    {
-        return new Rule($name, $args);
-    }
-
-    /**
-     * RuleSet Builder.
-     *
-     * @param  array   $rules Rules arguments as an array
-     * @return RuleSet        The RuleSet
-     */
-    public static function buildRuleSet(array $args, $name = '0')
-    {
-        if (isset($args['is_wheel']) and $args['is_wheel']) {
-            $wheels = $args['replace'];
-            $rules = new RuleSet($name, $args);
-            foreach ($wheels as $name => $wheel) {
-                $rules->add(self::buildRuleSet($wheel, $name));
-            }
-        } else {
-            $rules = self::createRule($args, $name);
-        }
-
-        return $rules;
     }
 
     /**

@@ -59,7 +59,7 @@ class StrReplacement extends Replacement implements ReplacementInterface
      *
      * @throws Exception Need a Callback
      */
-    public function replace($text)
+    protected function replace($text)
     {
         if ($this->strtr) {
             return $this->replaceStrtr($text);

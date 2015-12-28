@@ -26,34 +26,32 @@ namespace TextWheel\Rule;
 interface RuleInterface
 {
     /**
-     * The effective application of replacement.
-     *
-     * @param  string $text The input text
-     *
-     * @throws Exception    In case the replacement cannot compute
-     *
-     * @return string       The output text
-     */
-    public function apply($text);
-
-    /**
-     * Adds a rule to Composite Rule object.
-     *
-     * @param RuleInterface $rule a Rule to add
-     */
-    public function add(RuleInterface $rule);
-
-    /**
-     * Removes a rule to Composite Rule object.
-     *
-     * @param  RuleInterface $rule a Rule to remove
-     */
-    public function remove(RuleInterface $rule);
-
-    /**
      * Gets the name of the rule.
      *
      * @return string The name of the rule
      */
     public function getName();
+
+    /**
+     * Gets the priority of the rule.
+     *
+     * @return integer The priority of the rule
+     *
+     * @see RuleSet::sort()
+     */
+    public function getPriority();
+
+    /**
+     * Tells if the rule is disabled.
+     *
+     * @return boolean true if the rule is disabled
+     */
+    public function isDisabled();
+
+    /**
+     * Disable the rule.
+     *
+     * @return void
+     */
+    public function setDisabled();
 }
