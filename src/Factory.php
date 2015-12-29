@@ -30,11 +30,11 @@ use TextWheel\Replacement\Wheel;
 class Factory
 {
     /**
-     * { function_description }
+     * Builds the Full Class Name of a Replacement
      *
-     * @param  string  $type         (description)
-     * @param  boolean $is_callback  (description)
-     * 
+     * @param  string  $type         The type of the rule
+     * @param  boolean $is_callback  true if replace is a callback function
+     *
      * @return string  Class name
      */
     private static function buildReplacementClass($type, $is_callback)
@@ -64,6 +64,53 @@ class Factory
     }
 
     /**
+     * Gets a list of Condition set by properties.
+     *
+     * @param  array $args Properties of the rule
+     *
+     * @return array       Condition properties of the rule
+     */
+    private static function getConditionList(array $args)
+    {
+        static $conditions = array(
+            'if_chars' => 'TextWheel\Condition\CharsCondition',
+            'if_match' => 'TextWheel\Condition\MatchCondition',
+            'if_str' => 'TextWheel\Condition\StrCondition',
+            'if_stri' => 'TextWheel\Condition\StriCondition',
+        );
+
+        return array_intersect_key($args, $conditions);
+    }
+
+    /**
+     * Builds a Wheeled Replacement.
+     *
+     * @param  array  $replacement Rule properties
+     * @param  string $name        Optional name of the wheel
+     *
+     * @return array               Rule properties
+     */
+    public static function buildWheeledReplacement(array $replacement, $name = '')
+    {
+        $wheel = new Wheel($name, $replacement);
+        foreach ($replacement['replace'] as $subname => $subwheel) {
+            $wheel->add(self::createReplacement($subwheel, $subname));
+        }
+
+        $replacement['replace'] = function ($matches) use ($wheel, $replacement) {
+            $matches = ('preg' !== $replacement['type'] or !isset($replacement['match'])) ?
+                $matches :
+                $matches[intval($replacement['pick_match'])];
+            return $wheel->apply($matches);
+        };
+
+        $replacement['is_callback'] = true;
+        $replacement['create_replace'] = false;
+
+        return $replacement;
+    }
+
+    /**
      * Creates a Replacement object.
      *
      * @param array  $args Properties of the rule
@@ -86,22 +133,10 @@ class Factory
 
         $args = array_merge($defaultProperties, $args);
         $replacement = array_intersect_key($args, $defaultProperties);
+        $replacement = array_merge($replacement, self::getConditionList($args));
 
         if ((bool) $replacement['is_wheel']) {
-            $wheel = new Wheel($name, $args);
-            foreach ($replacement['replace'] as $subname => $subwheel) {
-                $wheel->add(self::createReplacement($subwheel, $subname));
-            }
-
-            $replacement['replace'] = function ($matches) use ($wheel, $replacement) {
-                $matches = ('preg' !== $replacement['type'] or !isset($replacement['match'])) ?
-                    $matches :
-                    $matches[intval($replacement['pick_match'])];
-                return $wheel->apply($matches);
-            };
-
-            $replacement['is_callback'] = true;
-            $replacement['create_replace'] = false;
+            $replacement = self::buildWheeledReplacement($replacement);
         }
 
         if ((bool) $replacement['create_replace']) {

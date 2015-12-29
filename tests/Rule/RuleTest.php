@@ -35,31 +35,26 @@ class RuleTest extends TestCase
 
         $data['disabled by argument'] = array(
             true,
-            'Some Rule',
             array('disabled' => true),
         );
 
         $data['replace property missing'] = array(
             true,
-            'Some Rule',
             array('match' => 'text'),
         );
 
         $data['unknown type'] = array(
             true,
-            'Some Rule',
             array('type' => 'unknown'),
         );
 
         $data['Preg Rule'] = array(
             false,
-            'a Preg Rule',
             $this->minimalArguments(),
         );
 
         $data['Split with glue'] = array(
             false,
-            'Split with glue',
             array('type' => 'split', 'is_callback' => true, 'match' => 'text', 'replace' => 'test', 'glue' => 'glue'),
         );
 
@@ -69,16 +64,15 @@ class RuleTest extends TestCase
     /**
      * @dataProvider dataDisabled
      */
-    public function testDisabled($expected, $name, $args)
+    public function testDisabled($expected, $args)
     {
-        $rule = $this->getReplacement($args, $name);
-
+        $rule = $this->getReplacement($args);
         $this->assertSame($expected, $rule->isDisabled());
     }
 
     public function testDisabledBySetter()
     {
-        $rule = $this->getReplacement();
+        $rule = $this->getRule();
         $rule->setDisabled();
 
         $this->assertTrue($rule->isDisabled());
@@ -87,11 +81,6 @@ class RuleTest extends TestCase
     public function dataInvalidArgs()
     {
         $data = array();
-
-        $data['Name is not a string'] = array(
-            null,
-            $this->minimalArguments(),
-        );
 
         $data['Match is an array'] = array(
             'an Invalid Split Rule',

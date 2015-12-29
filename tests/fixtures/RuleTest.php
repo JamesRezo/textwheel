@@ -6,5 +6,4 @@ use TextWheel\Rule\AbstractRule;
 
 class RuleTest extends AbstractRule
 {
-    
 }

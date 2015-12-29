@@ -39,6 +39,10 @@ class CallbackSplitReplacement extends Replacement implements ReplacementInterfa
      */
     public function __construct($name, array $args)
     {
+        if (isset($args['glue'])) {
+            $this->glue = $args['glue'];
+        }
+
         parent::__construct($name, $args);
 
         $this->match = array(

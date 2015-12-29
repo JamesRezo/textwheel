@@ -73,8 +73,12 @@ class TestCase extends PHPUnit_Framework_TestCase
         return Factory::createReplacement($args, $name);
     }
 
-    protected function getRule($args)
+    protected function getRule(array $args = array())
     {
+        if (empty($args)) {
+            $args = $this->minimalArguments();
+        }
+
         return new RuleTest('RuleTest', $args);
     }
 }

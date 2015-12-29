@@ -27,10 +27,10 @@ use TextWheel\Rule\AbstractRule;
  */
 abstract class Replacement extends AbstractRule implements ReplacementInterface
 {
-    /** @var array|string         Replacements */
+    /** @var array|string Replacements */
     protected $replace;
 
-    /** @var array|string         Patterns to replace */
+    /** @var array|string Patterns to replace */
     protected $match;
 
     /**
@@ -43,10 +43,12 @@ abstract class Replacement extends AbstractRule implements ReplacementInterface
     {
         parent::__construct($name, $args);
 
-        foreach ($args as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->$key = $value;
-            }
+        if (isset($args['replace'])) {
+            $this->replace = $args['replace'];
+        }
+
+        if (isset($args['match'])) {
+            $this->match = $args['match'];
         }
 
         $this->initialize();

@@ -36,4 +36,14 @@ class IdentityReplacement extends Replacement implements ReplacementInterface
     {
         return $text;
     }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
+    protected function initialize()
+    {
+        $this->setDisabled();
+    }
 }

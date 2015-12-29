@@ -89,7 +89,7 @@ class CallbackReplacementTest extends TestCase
         );
 
         $data['is_wheel test2'] = array(
-            '(This) (is) (a) (second) (artwork) (written) (by) (myself)',
+            '(This) (is) (a) (second) (text) (written) (by) (myself)',
             array('is_wheel' => true, 'type' => 'split', 'match' => ' ', 'replace' => array(
                 0 => array(
                     'type' => 'all',
@@ -104,7 +104,7 @@ class CallbackReplacementTest extends TestCase
                     'match' => '/text/',
                     'replace' => 'artwork',
                     'if_str' => 'by myself',
-                    //'priority' => -1
+                    'priority' => -1
                 ),
             )),
         );
