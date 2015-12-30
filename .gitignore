@@ -3,6 +3,7 @@
 /.idea
 /.buildpath
 /vendor/
+/build/
 composer.phar
 .php_cs.cache
 phpunit.xml
