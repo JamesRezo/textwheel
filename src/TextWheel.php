@@ -21,15 +21,15 @@ use TextWheel\Utils\File;
  */
 class TextWheel
 {
-    /** @var Wheel The Rules */
-    protected $ruleset;
+    /** @var ReplacmentInterface[] The Rules */
+    protected $ruleset = array();
 
     /**
      * Base TextWheel Contructor.
      *
      * @param string|array $ruleset a file or an array of rules
      */
-    public function __construct($ruleset)
+    public function __construct($ruleset = array())
     {
         if (is_string($ruleset)) {
             $ruleset = $this->loadFile($ruleset);
@@ -40,7 +40,7 @@ class TextWheel
         }
 
         foreach ($ruleset as $name => $rules) {
-            $this->ruleset = Factory::createReplacement($rules, $name);
+            $this->ruleset[] = Factory::createReplacement($rules, $name);
         }
     }
 
@@ -53,7 +53,11 @@ class TextWheel
      */
     public function process($text)
     {
-        return $this->ruleset->apply($text);
+        foreach ($this->ruleset as $rule) {
+            $text = $this->ruleset->apply($text);
+        }
+
+        return $text;
     }
 
     /**
