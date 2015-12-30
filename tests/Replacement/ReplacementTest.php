@@ -101,4 +101,24 @@ class ReplacementTest extends TestCase
         $replacement = $this->getReplacement(array('type' => 'split', 'replace' => ''));
         $replacement->apply('');
     }
+
+    public function testAddInNotWheelReplacement()
+    {
+        $replacement1 = $this->getReplacement();
+        $replacement2 = $this->getReplacement();
+        $replacement1->add($replacement2);
+
+        $this->assertSame('This is a simple text written by myself', $replacement1->apply($this->text));
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testMemoryLimit()
+    {
+        ini_set('pcre.backtrack_limit', 0);
+        $replacement = $this->getReplacement();
+
+        $replacement->apply($this->text);
+    }
 }

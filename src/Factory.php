@@ -129,6 +129,8 @@ class Factory
             'create_replace' => false,
             'is_wheel' => false,
             'pick_match' => 0,
+            'priority' => 0,
+            'disabled' => false,
         );
 
         $args = array_merge($defaultProperties, $args);

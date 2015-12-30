@@ -35,9 +35,18 @@ class TestCase extends PHPUnit_Framework_TestCase
 
     protected $fixtures;
 
+    protected $backtrackLimit;
+
     protected function setUp()
     {
         $this->fixtures = __DIR__ . '/fixtures/';
+
+        $this->backtrackLimit = ini_get('pcre.backtrack_limit');
+    }
+
+    protected function tearDown()
+    {
+        ini_set('pcre.backtrack_limit', $this->backtrackLimit);
     }
 
     protected function requireFile($file)
@@ -73,12 +82,12 @@ class TestCase extends PHPUnit_Framework_TestCase
         return Factory::createReplacement($args, $name);
     }
 
-    protected function getRule(array $args = array())
+    protected function getRule(array $args = array(), $name = '')
     {
         if (empty($args)) {
             $args = $this->minimalArguments();
         }
 
-        return new RuleTest('RuleTest', $args);
+        return new RuleTest($name, $args);
     }
 }

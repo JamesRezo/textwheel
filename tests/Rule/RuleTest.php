@@ -135,4 +135,46 @@ class RuleTest extends TestCase
 
         $this->assertSame($expected, $rule->getPriority());
     }
+
+    public function dataName()
+    {
+        $data = array();
+
+        $data['default'] = array(
+            '',
+            null,
+        );
+
+        $data['numeric'] = array(
+            0,
+            0,
+        );
+
+        $data['some string'] = array(
+            'some string',
+            'some string',
+        );
+
+        $data['non-scalar 1'] = array(
+            '',
+            array('name'),
+        );
+
+        $data['non-scalar 2'] = array(
+            '',
+            new \StdClass,
+        );
+
+        return $data;
+    }
+
+    /**
+     * @dataProvider dataName
+     */
+    public function testName($expected, $name)
+    {
+        $rule = $this->getRule(array(), $name);
+
+        $this->assertSame($expected, $rule->getName());
+    }
 }

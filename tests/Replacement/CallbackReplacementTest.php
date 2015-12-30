@@ -124,4 +124,18 @@ class CallbackReplacementTest extends TestCase
 
         $this->assertSame($expected, $replacement->apply($this->text));
     }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function _testMemoryLimit()
+    {
+        ini_set('pcre.backtrack_limit', 0);
+
+        $replacement = $this->getReplacement(array(
+            'replace' => 'str_rot13', 'match' => '/(\w+)/', 'is_callback' => true
+        ));
+
+        $replacement->apply($this->text);
+    }
 }
