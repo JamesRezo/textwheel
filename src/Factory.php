@@ -20,8 +20,6 @@
 
 namespace TextWheel;
 
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\Exception\ParseException;
 use TextWheel\Replacement\Wheel;
 
 /**
@@ -189,75 +187,5 @@ class Factory
         }
 
         return array_values($set);
-    }
-
-    /**
-     * file finder : can be overloaded in order to use application dependant
-     * path find method
-     *
-     * @param string $file
-     * @param string $path
-     * @return string
-     */
-    public static function findFile($file, $path = '')
-    {
-        static $defaultPath;
-
-        // absolute file path ?
-        if (file_exists($file)) {
-            return $file;
-        }
-
-        // file embed with texwheels, relative to calling ruleset
-        if ($path and file_exists($f = $path . $file)) {
-            return $f;
-        }
-
-        // textwheel default path ?
-        if (!$defaultPath) {
-            $defaultPath = __DIR__ . '/../wheels/';
-        }
-        if (file_exists($f = $defaultPath . $file)) {
-            return $f;
-        }
-
-        return false;
-    }
-    
-    /**
-     * Load a yaml file describing rules.
-     *
-     * @param string $file
-     * @param string $default_path
-     *
-     * @return array
-     */
-    public static function loadFile($file, $defaultPath = '')
-    {
-        if (!preg_match(',[.]ya?ml$,i', $file)
-          // external rules
-          or !$file = self::findFile($file, $defaultPath)) {
-            return array();
-        }
-
-        $yaml = new Parser();
-
-        try {
-            $rules = $yaml->parse(file_get_contents($file));
-        } catch (ParseException $e) {
-            printf("Unable to parse the YAML string: %s", $e->getMessage());
-        }
-
-        if (is_null($rules)) {
-            $rules = array();
-        }
-
-        // if a php file with same name exists
-        // include it as it contains callback functions
-        if ($f = preg_replace(',[.]ya?ml$,i', '.php', $file)
-        and file_exists($f)) {
-            $rules[] = array('require' => $f, 'priority' => -1000);
-        }
-        return $rules;
     }
 }

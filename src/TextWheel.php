@@ -20,6 +20,8 @@
 
 namespace TextWheel;
 
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Exception\ParseException;
 use TextWheel\Factory;
 use TextWheel\Replacement\Wheel;
 
@@ -39,7 +41,7 @@ class TextWheel
     public function __construct($ruleset)
     {
         if (is_file($ruleset)) {
-            $ruleset = Factory::loadFile($ruleset);
+            $ruleset = $this->loadFile($ruleset);
         }
 
         if (!is_array($ruleset)) {
@@ -52,14 +54,84 @@ class TextWheel
     }
 
     /**
-     * Process all rules of RuleSet to a text
+     * Process all rules of RuleSet to a text.
      *
-     * @param string $text
+     * @param  string $text The input text
      *
-     * @return string
+     * @return string       The output text
      */
     public function process($text)
     {
         return $this->ruleset->apply($text);
+    }
+
+    /**
+     * file finder : can be overloaded in order to use application dependant
+     * path find method
+     *
+     * @param string $file
+     * @param string $path
+     * @return string
+     */
+    private function findFile($file, $path = '')
+    {
+        static $defaultPath;
+
+        // absolute file path ?
+        if (file_exists($file)) {
+            return $file;
+        }
+
+        // file embed with texwheels, relative to calling ruleset
+        if ($path and file_exists($f = $path . $file)) {
+            return $f;
+        }
+
+        // textwheel default path ?
+        if (!$defaultPath) {
+            $defaultPath = __DIR__ . '/../wheels/';
+        }
+        if (file_exists($f = $defaultPath . $file)) {
+            return $f;
+        }
+
+        return false;
+    }
+    
+    /**
+     * Load a yaml file describing rules.
+     *
+     * @param string $file
+     * @param string $default_path
+     *
+     * @return array
+     */
+    private function loadFile($file, $defaultPath = '')
+    {
+        if (!preg_match(',[.]ya?ml$,i', $file)
+          // external rules
+          or !$file = $this->findFile($file, $defaultPath)) {
+            return array();
+        }
+
+        $yaml = new Parser();
+
+        try {
+            $rules = $yaml->parse(file_get_contents($file));
+        } catch (ParseException $e) {
+            printf("Unable to parse the YAML string: %s", $e->getMessage());
+        }
+
+        if (is_null($rules)) {
+            $rules = array();
+        }
+
+        // if a php file with same name exists
+        // include it as it contains callback functions
+        if ($f = preg_replace(',[.]ya?ml$,i', '.php', $file)
+        and file_exists($f)) {
+            $rules[] = array('require' => $f, 'priority' => -1000);
+        }
+        return $rules;
     }
 }
