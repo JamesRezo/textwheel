@@ -1,6 +1,6 @@
 {
-    "name": "textwheel/textwheel",
-    "description": "an interoperability layer for all the different text engines",
+    "name": "textwheel/engine",
+    "description": "An interoperability layer for all the different text engines",
     "require": {
         "symfony/yaml": "^2.7"
     },
