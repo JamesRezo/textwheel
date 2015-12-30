@@ -1,0 +1,4 @@
+hello:
+  match: "input"
+  type: str
+  replace: "output"

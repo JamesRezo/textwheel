@@ -1,0 +1,7 @@
+{
+    "hello": {
+        "type": "str",
+        "match": "input",
+        "replace": "output"
+    }
+}
