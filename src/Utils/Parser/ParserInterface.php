@@ -29,11 +29,11 @@ use Symfony\Component\Yaml\Exception\ParseException;
 interface ParserInterface
 {
     /**
-     * [parse description].
+     * Parsing following the extension format.
      *
-     * @param  string $content [description]
+     * @param  string $content formatted rules
      *
-     * @return array           [description]
+     * @return array           rules as array
      */
     public static function parse($content = '');
 }
