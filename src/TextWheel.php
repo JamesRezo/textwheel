@@ -1,21 +1,14 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * This file is part of TextWheel package.
  *
- * let's reinvent the wheel one last time
+ * (c) 2009 Fil <fil@rezo.net>
+ * http://zzz.rezo.net/-TextWheel-
  *
- * This library of code is meant to be a fast and universal replacement
- * for any and all text-processing systems written in PHP
- *
- * It is dual-licensed for any use under the GNU/GPL2 and MIT licenses,
- * as suits you best
- *
- * (c) 2009 Fil - fil@rezo.net
- * Documentation & http://zzz.rezo.net/-TextWheel-
- *
- * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
+ * Dual licensed under the MIT and GPL2 licenses.
+ * For the full copyright and license information, please view the LICENSE-MIT
+ * and LICENSE-GPL files that was distributed with this source code.
  */
 
 namespace TextWheel;

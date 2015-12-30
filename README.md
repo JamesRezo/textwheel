@@ -1,16 +1,17 @@
-##summary TextWheel overview
+#TextWheel
+
+## Overview
 
 This is a preliminary proposal for an interoperability layer for all the different text engines that have been floating for years now around the Web.
 
 It is *not* a proposal for a unified syntax (though it might help it happen at some point).
 
-
-= Rationale =
+## Rationale
 
 Most text engines seem keen on reinventing the wheel, each time with a different flavor and style. But they all basically do the same stuff: take a text as an input, and output formatted text according to rules that are applied in sequence.
 
 For example while Textile does this:
-<code>
+```php
   @define('txt_registered', '&#174;');
   @define('txt_copyright', '&#169;');
 ../..
@@ -19,18 +20,16 @@ For example while Textile does this:
   'registered' => txt_registered,
   'copyright' => txt_copyright,
 );
-</code>
+```
 
 PHP-Typography does this:
-<code>
+```php
   $this->chr["copyright"] = $this->uchr(169);
   $this->chr["registeredMark"] = $this->uchr(174);
-</code>
-
-
+```
 
 Again, when Drupal does "prepare paragraphs" with:
-<code>
+```php
   $chunk = preg_replace('|\n*$|', '', $chunk) ."\n\n"; // just to make things a little easier, pad the end
   $chunk = preg_replace('|<br />\s*<br />|', "\n\n", $chunk);
   $chunk = preg_replace('!(<'. $block .'[^>]*>)!', "\n$1", $chunk); // Space things out a little
@@ -40,16 +39,15 @@ Again, when Drupal does "prepare paragraphs" with:
   $chunk = preg_replace('|<p>\s*</p>\n|', '', $chunk); // under certain strange conditions it could create a P of entirely whitespace
   $chunk = preg_replace("|<p>(<li.+?)</p>|", "$1", $chunk); // problem with nested lists
   $chunk = preg_replace('|<p><blockquote([^>]*)>|i', "<blockquote$1><p>", $chunk);
-</code>
+```
 
 SPIP does it with:
-<code>
+```php
   $letexte = preg_replace(',(<p\b.*>)\s*,UiS'.$u, '\1',$letexte);
   $letexte = preg_replace(',\s*(</p\b.*>),UiS'.$u, '\1',$letexte);
   $letexte = preg_replace(',<p\b[^<>]*></p>\s*,iS'.$u, '', $letexte);
   $letexte = str_replace('<p >', "<p$class_spip>", $letexte);
-</code>
-
+```
 
 OK, you got it... and this is the same over and over, _ad nauseam._ Paragraph formatting, XSS security clearance, emphasis, links, images, and so on. Every project seems to be writing its own lists of sometimes less-than-optimal code to do the same stuff.
 
@@ -57,32 +55,20 @@ OK, you got it... and this is the same over and over, _ad nauseam._ Paragraph fo
 
 I propose everyone does this:
 
-<code>
-require_once 'path/to/textwheel.php';
-$ruleset[] = array(
-  'match' => '(C)',
-  'replace' => '&#169;'
-);
-$ruleset[] = array(
-  'match' => '(R)',
-  'replace' => '&#174;'
-);
+```php
+use TextWheel\TextWheel;
 
-$textwheel = new TextWheel($ruleset);
-$text = $textwheel->text($text);
-</code>
+$textwheel = new TextWheel('/path/to/rules.yml');
+$text = $textwheel->process($text);
+```
 
 OK now, what's going to be boring is that, at some point, someone will have to rewrite all those engines into lists of rules. But then lists of rules will be _conventional_ and _description-based_. And this will mean a lot in terms of simplicity and interoperability.
 
-
-
-= Rules & Regulations =
-
+## Rules & Regulations
 
 Regulation *#1. TextWheel is agnostic*
 
-By itself TextWheel does not contain {any} rule and does not favor any "shortcut syntax" over the other. The engine ships with no base ruleset (i.e., does nothing). Give it a ruleset, and it does apply all rules in sequence, as fast as possible.
-
+By itself TextWheel does not contain _any_ rule and does not favor any "shortcut syntax" over the other. The engine ships with no base ruleset (i.e., does nothing). Give it a ruleset, and it does apply all rules in sequence, as fast as possible.
 
 Regulation *#2. A good ruleset is autonomous*
 
@@ -90,30 +76,28 @@ If you want to port an existing text engine to TextWheel, please try and make su
 
 Rulesets can be distributed alongside TextWheel when they are autonomous.
 
-
-= How to start =
+## How to start
 
 The simplest way to integrate your engine with TextWheel is the following:
-<code>
-require_once 'path/to/textwheel.php';
-$ruleset[] = array(
+```php
+use TextWheel\TextWheel;
+
+$ruleset['myengine'] = array(
   'match' => '/.*/',
   'replace' => 'return myengine($m[0]);',
-  'is_callback' => true,
-  'create_replace' => true
+  'create_replace' => true,
 );
 $textwheel = new TextWheel($ruleset);
-$text = $textwheel->text($text);
-</code>
+$text = $textwheel->process($text);
+```
 
 which means "just call my function on the whole text". This might be a first step.
 
+## Code examples
 
-= Code examples =
+1. my ruleset
 
-*0. my ruleset =
-
-<code>
+```php
 $ruleset = array(
   array(
     'type' => 'str',
@@ -126,36 +110,37 @@ $ruleset = array(
     'replace' => 'return strlen($m[0]);',
     'if_chars' => ' ',
     'create_replace' => true,
-    'is_callback' => true
-  )
+  ),
 );
-</code>
+```
 
 This ruleset has two rules.
 
-The first one does a <code>str_replace</code> transforming all <code>'aa'</code> substrings to <code>'bb'</code>. It is applied only if the character <code>'a'</code> is present in the text.
+The first one does a `str_replace` transforming all `'aa'` substrings to `'bb'`. It is applied only if the character `'a'` is present in the text.
 
-The second one will apply only if the text contains a space character. If so, a replacement function will be created on the fly, then there will be a <code>preg_replace_callback()</code> on the <code>'/\s+/S</code> expression (any sequence of spaces), call the newliy created function (which replaces a the matched substring by its character length).
+The second one will apply only if the text contains a space character. If so, a replacement function will be created on the fly, then there will be a ``preg_replace_callback()`` on the `/\s+/S` expression (any sequence of spaces), call the newliy created function (which replaces a the matched substring by its character length).
 
+2. procedural call
 
-*1. procedural call*
+```php
+function verynice($text)
+{
+    static $wheel;
+    if (!isset($wheel)) {
+        $wheel = new TextWheel(ruleset());
+    }
 
-<code>
-function verynice($text) {
-  static $wheel;
-  if (!isset($wheel)) {
-    $wheel = new TextWheel(ruleset());
-  }
-  return $wheel->text($text);
+    return $wheel->process($text);
 }
+
 var_dump(verynice('ab   baa z '));
-</code>
+```
 
-As you might have guessed, both calls will output: <code>string(9) "ab3bbb1z1"</code>.
+As you might have guessed, both calls will output: `string(9) "ab3bbb1z1"`.
 
-*2. object call*
+2. object call
 
-<code>
+```php
 class VeryNice extends TextWheel {
   function VeryNice() {
     $this->addRules(ruleset());
@@ -163,59 +148,22 @@ class VeryNice extends TextWheel {
 }
 $wheel = new VeryNice();
 var_dump($wheel->text('ab   baa z '));
-</code>
+```
 
-
-= API and Options =
+## API and Options
 
 - Before compiling and applying a complex regular expression, a rule can check if it's needed, with a (much) simpler expression check.
-- Pattern matching can be done by <code>str_replace()</code> or <code>preg_match()</code>.
+- Pattern matching can be done by ``str_replace()</code> or <code>preg_match()``.
 -  Replacements can be done with string expressions or with callback functions.
 - Callback functions can be created on the fly as they are needed.
 
 OK let's have a look at the API:
 
-A rule can be defined by a <code>TextWheelRule</code> object instance (but an array with the same named properties is fine):
+A rule can be defined by a `TextWheel\Rule` object instance (but an array with the same named properties is fine):
 
-<code>
-class TextWheelRule {
+The `TextWheel` class offer the following API:
 
-  ## rule description
-  # optional
-  var $priority = 0; # rule priority (rules are applied in ascending order)
-    # -100 = application escape, +100 = application unescape
-  var $disabled=false; # true if rule is disabled
-
-  ## rule init checks
-  ## the rule will be applied if the text...
-  # optional
-  var $if_chars; # ...contains one of these chars
-  var $if_str; # ...contains this string
-  var $if_match; # ...matches this simple expr
-
-  ## rule effectors, matching
-  # mandatory
-  var $type='str'; # str or preg match
-  var $match; # matching string or expression
-
-  ## rule effectors, replacing
-  # mandatory
-  var $replace; # replace match with this expression
-  var $is_callback=false; # $replace is a callback function
-  # optional
-  var $require; # file to require_once
-  var $create_replace; # do create_function('$m', %) on $this->replace, $m is the matched array
-}
-</code>
-
-See the actual code for the full version. An open question is what to do with the <code>author</code>, <code>package</code>, <code>version</code>... fields of the rule object. For the moment I have no fixed idea on this issue.
-
-
-~
-
-The <code>TextWheel</code> class offer the following API:
-
-<code>
+```php
 class TextWheel {
   var $rules = array();
   public function TextWheel($ruleset = array()) {}
@@ -223,5 +171,4 @@ class TextWheel {
   public function addRule($rule) {}
   public function addRules(array $rules) {}
 }
-</code>
-
+```
