@@ -15,6 +15,7 @@ namespace TextWheel;
 
 use TextWheel\Factory;
 use TextWheel\Utils\File;
+use TextWheel\Utils\Compiler;
 
 /**
  * The Main object of the libray.
@@ -23,6 +24,9 @@ class TextWheel
 {
     /** @var ReplacmentInterface[] The Rules */
     protected $ruleset = array();
+
+    /** @var Callable[] Store for compiled code */
+    protected $compiled = array();
 
     /**
      * Base TextWheel Contructor.
@@ -58,6 +62,40 @@ class TextWheel
         }
 
         return $text;
+    }
+
+    /**
+     * Process all rules using compiled anonymous functions.
+     *
+     * @param  string $text The input text
+     *
+     * @return string       The output text
+     */
+    public function text($text)
+    {
+        if (empty($this->compiled)) {
+            $this->compile();
+        }
+
+        foreach ($this->compiled as $name => $compiled_rule) {
+            $text = $compiled_rule($text);
+        }
+
+        return $text;
+    }
+
+    /**
+     * Compile all Rules as an array of anonymous functions.
+     *
+     * @return void
+     */
+    protected function compile()
+    {
+        $compiler = new Compiler();
+
+        foreach ($this->ruleset as $rule) {
+            $this->compiled[$rule->getName()] = create_function('$text', $compiler->compile($rule));
+        }
     }
 
     /**

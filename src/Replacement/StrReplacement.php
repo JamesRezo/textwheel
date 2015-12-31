@@ -83,4 +83,15 @@ class StrReplacement extends Replacement implements ReplacementInterface
     {
         return strtr($text, $this->match, $this->replace);
     }
+
+    public function getCompiledCode()
+    {
+        if ($this->strtr) {
+            return '$text = strtr($text, ' . var_export($this->match, true) . ', ' .
+                var_export($this->replace, true) . ');';
+        }
+
+        return '$text = str_replace(' . var_export($this->match, true) . ', ' .
+            var_export($this->replace, true) . ', $text);';
+    }
 }

@@ -36,4 +36,14 @@ class StrCondition extends Condition implements ConditionInterface
     {
         return strpos($text, $this->condition) !== false;
     }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return string       the code encapsulated by the condition test
+     */
+    public function getCompiledCode()
+    {
+        return 'strpos($text, '.var_export($this->condition, true).') !== false';
+    }
 }

@@ -66,6 +66,12 @@ class CallbackSplitReplacement extends Replacement implements ReplacementInterfa
         return $text;
     }
 
+    public function getCompiledCode()
+    {
+        return '$splitText = explode(' . var_export($this->match[0], true) . ', $text);' .
+        '$text = join(' . var_export($this->match[1], true) . ', array_map(' . var_export($this->replace, true) . ', $splitText));';
+    }
+
     /**
      * {@inheritdoc}
      *

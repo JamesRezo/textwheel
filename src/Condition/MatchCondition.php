@@ -36,4 +36,14 @@ class MatchCondition extends Condition implements ConditionInterface
     {
         return (bool) preg_match($this->condition, $text);
     }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return string       the code encapsulated by the condition test
+     */
+    public function getCompiledCode()
+    {
+        return '(bool) preg_match('.var_export($this->condition, true).', $text)';
+    }
 }

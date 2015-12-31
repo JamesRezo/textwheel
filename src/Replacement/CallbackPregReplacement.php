@@ -44,4 +44,10 @@ class CallbackPregReplacement extends Replacement implements ReplacementInterfac
 
         return $text;
     }
+
+    public function getCompiledCode()
+    {
+        return '$text = preg_replace_callback(' . var_export($this->match, true) . ', ' .
+            var_export($this->replace, true) . ', $text);';
+    }
 }

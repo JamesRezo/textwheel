@@ -43,4 +43,13 @@ class CallbackStrReplacement extends Replacement implements ReplacementInterface
 
         return $text;
     }
+
+    public function getCompiledCode()
+    {
+        return '$text = (strpos($text, ' . var_export($this->match, true) .') !== false) ?
+            ((count($b = explode(' . var_export($this->match, true) .', $text)) > 1) ?
+                $text = join(' . $this->replace .'(' . var_export($this->match, true) .'), $b)
+            : $text)
+        : $text;';
+    }
 }

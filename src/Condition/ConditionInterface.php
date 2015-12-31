@@ -33,4 +33,11 @@ interface ConditionInterface
      * @return boolean       true if the rule applies to the input text
      */
     public function appliesTo($text);
+
+    /**
+     * The compiled version of a condition test.
+     *
+     * @return string       the code encapsulated by the condition test
+     */
+    public function getCompiledCode();
 }

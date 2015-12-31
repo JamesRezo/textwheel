@@ -44,4 +44,10 @@ class PregReplacement extends Replacement implements ReplacementInterface
 
         return $text;
     }
+
+    public function getCompiledCode()
+    {
+        return '$text = preg_replace(' . var_export($this->match, true) . ', ' .
+            var_export($this->replace, true) . ', $text);';
+    }
 }

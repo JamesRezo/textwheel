@@ -105,4 +105,20 @@ abstract class AbstractRule implements RuleInterface
 
         return $this;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCompiledCode()
+    {
+        return '';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
 }

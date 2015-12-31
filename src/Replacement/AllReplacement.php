@@ -45,4 +45,11 @@ class AllReplacement extends Replacement implements ReplacementInterface
 
         return $text;
     }
+
+    public function getCompiledCode()
+    {
+        return '$text = (strpos(' . var_export($this->replace, true) .' , \'$0\') !== false) ? ' .
+        'str_replace(\'$0\', $text, ' . var_export($this->replace, true) .') : ' .
+        var_export($this->replace, true) .';';
+    }
 }
