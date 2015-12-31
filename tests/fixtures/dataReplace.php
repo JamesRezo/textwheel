@@ -49,5 +49,20 @@ function dataReplace()
         array('replace' => array('to', 'I wrote'), 'match' => array('/by/', '/written/'))
     );
 
+    $data['preg + 1 condition'] = array(
+        'This is a simple text written by myself',
+        array('replace' => 'text', 'match' => '/test/', 'if_match' => '/^This/')
+    );
+
+    $data['preg + 2 matching conditions'] = array(
+        'This is a simple text written by myself',
+        array('replace' => 'text', 'match' => '/test/', 'if_chars' => 'aeiy', 'if_str' => 'test')
+    );
+
+    $data['preg + 1 non-matching condition'] = array(
+        'This is a simple test written by myself',
+        array('replace' => 'text', 'match' => '/test/', 'if_str' => "\n", 'if_chars' => 'aeiy')
+    );
+
     return $data;
 }
