@@ -172,3 +172,9 @@ class TextWheel {
   public function addRules(array $rules) {}
 }
 ```
+
+##License
+
+This library is dual licensed under the MIT and GPL2 licenses.
+For the full copyright and license information, please view the LICENSE-MIT
+and LICENSE-GPL files that was distributed with this source code.
