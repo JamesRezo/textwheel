@@ -58,7 +58,7 @@ class TextWheel
     public function process($text)
     {
         foreach ($this->ruleset as $rule) {
-            $text = $this->ruleset->apply($text);
+            $text = $rule->apply($text);
         }
 
         return $text;
