@@ -27,12 +27,11 @@ use TextWheel\TextWheel;
  */
 class Debugger extends TextWheel
 {
-    protected static $t; #tableaux des temps
-    protected static $tu; #tableaux des temps (rules utilises)
-    protected static $tnu; #tableaux des temps (rules non utilises)
-    protected static $u; #compteur des rules utiles
-    protected static $w; #compteur des rules appliques
-    public static $total;
+    protected $t; #tableaux des temps
+    protected $tu; #tableaux des temps (rules utilises)
+    protected $tnu; #tableaux des temps (rules non utilises)
+    protected $u; #compteur des rules utiles
+    protected $w; #compteur des rules appliques
 
     /**
      * Timer for profiling.
@@ -45,11 +44,12 @@ class Debugger extends TextWheel
     protected function timer($t = 'rien', $raw = false)
     {
         static $time;
-        $a=time();
-        $b=microtime();
+
+        $a = time();
+        $b = microtime();
         // microtime peut contenir les microsecondes et le temps
-        $b=explode(' ', $b);
-        if (count($b)==2) {
+        $b = explode(' ', $b);
+        if (count($b) == 2) {
             $a = end($b);
         } // plus precis !
         $b = reset($b);
@@ -65,8 +65,9 @@ class Debugger extends TextWheel
                 $s = '';
             } else {
                 $s = sprintf("%d ", $x = floor($p/1000));
-                $p -= ($x*1000);
+                $p -= ($x * 1000);
             }
+
             return $s . sprintf("%.3f ms", $p);
         }
     }
@@ -74,113 +75,78 @@ class Debugger extends TextWheel
     /**
      * Apply all rules of RuleSet to a text
      *
-     * @param string $t
+     * @param string $text
+     *
      * @return string
      */
-    public function text($t)
+    public function process($text)
     {
-        $rules = & $this->ruleset->getRules();
-        ## apply each in order
-        foreach ($rules as $name => $rule) {
-            #php4+php5
-
+        foreach ($this->ruleset as $rule) {
+            $name = $rule->getName();
             if (is_int($name)) {
                 $name .= ' '.$rule->match;
             }
+
             $this->timer($name);
-            $b = $t;
-            $this->apply($rule, $t);
-            Debugger::$w[$name] ++; # nombre de fois appliquee
+            if (!isset($this->u[$name])) {
+                $this->u[$name] = 0;
+            }
+            $before = $text;
+            $text = $rule->apply($text);
+            if (!isset($this->w[$name])) {
+                $this->w[$name] = 0;
+            }
+            $this->w[$name] = $this->w[$name] + 1; # nombre de fois appliquee
+            
             $v = $this->timer($name, true); # timer
-            Debugger::$t[$name] += $v;
-            if ($t !== $b) {
-                Debugger::$u[$name] ++; # nombre de fois utile
-                Debugger::$tu[$name] += $v;
+            if (!isset($this->t[$name])) {
+                $this->t[$name] = 0;
+            }
+            $this->t[$name] = $this->t[$name] + $v;
+
+            if ($text !== $before) {
+                $this->u[$name] = $this->u[$name] + 1; # nombre de fois utile
+                if (!isset($this->tu[$name])) {
+                    $this->tu[$name] = 0;
+                }
+                $this->tu[$name] = $this->tu[$name] + $v;
             } else {
-                Debugger::$tnu[$name] += $v;
+                if (!isset($this->tnu[$name])) {
+                    $this->tnu[$name] = 0;
+                }
+                $this->tnu[$name] = $this->tnu[$name] + $v;
             }
         }
-        #foreach ($this->rules as &$rule) #smarter &reference, but php5 only
-        #   $this->apply($rule, $t);
-        return $t;
+
+        return $text;
     }
 
-    /**
-     * Ouputs data stored for profiling/debuging purposes
-     */
-    public static function outputDebug()
+    public function getDebugProcess()
     {
-        if (isset(Debugger::$t)) {
-            $time = array_flip(array_map('strval', Debugger::$t));
+        $total = 0;
+        $results = array();
+
+        if (isset($this->t)) {
+            $time = array_flip(array_map('strval', $this->t));
             krsort($time);
-            echo "
-            <div class='textwheeldebug'>
-            <style type='text/css'>
-                .textwheeldebug table { margin:1em 0; }
-                .textwheeldebug th,.textwheeldebug td { padding-left: 15px }
-                .textwheeldebug .prof-0 .number { padding-right: 60px }
-                .textwheeldebug .prof-1 .number { padding-right: 30px }
-                .textwheeldebug .prof-1 .name { padding-left: 30px }
-                .textwheeldebug .prof-2 .name { padding-left: 60px }
-                .textwheeldebug .zero { color:orange; }
-                .textwheeldebug .number { text-align:right; }
-                .textwheeldebug .strong { font-weight:bold; }
-            </style>
-            <table class='sortable'>
-            <caption>Temps par rule</caption>
-            <thead><tr><th>temps&nbsp;(ms)</th><th>rule</th><th>application</th><th>t/u&nbsp;(ms)</th><th>t/n-u&nbsp;(ms)</th></tr></thead>\n";
-            $total = 0;
+
             foreach ($time as $t => $r) {
-                $applications = intval(Debugger::$u[$r]);
+                $applications = intval($this->u[$r]);
                 $total += $t;
-                if (intval($t*10)) {
-                    echo "<tr>
-                    <td class='number strong'>".number_format(round($t*10)/10, 1)."</td><td> ".spip_htmlspecialchars($r)."</td>
-                    <td"
-                    . (!$applications ? " class='zero'" : "")
-                    .">".$applications."/".intval(Debugger::$w[$r])."</td>
-                    <td class='number'>".($applications?number_format(round(Debugger::$tu[$r]/$applications*100)/100, 2):"") ."</td>
-                    <td class='number'>".(($nu = intval(Debugger::$w[$r])-$applications)?number_format(round(Debugger::$tnu[$r]/$nu*100)/100, 2):"") ."</td>
-                    </tr>";
+                if (intval($t * 10)) {
+                    $nu = intval($this->w[$r]) - $applications;
+                    $profile = array(
+                        'time' => number_format(round($t * 10) / 10, 1),
+                        'rule' => $r,
+                        'application' => $applications . '/' . intval($this->w[$r]),
+                        'time/used' => ($applications ? number_format(round($this->tu[$r] / $applications * 100) / 100, 2) : ''),
+                        'time/unused' => ($nu ? number_format(round($this->tnu[$r] / $nu * 100) / 100, 2) : ''),
+                    );
+                    $results[] = $profile;
                 }
             }
-            echo "</table>\n";
-
-            echo "
-            <table>
-            <caption>Temps total par rule</caption>
-            <thead><tr><th>temps</th><th>rule</th></tr></thead>\n";
-            ksort($GLOBALS['totaux']);
-            Debugger::outputTotal($GLOBALS['totaux']);
-            echo "</table>";
-            # somme des temps des rules, ne tient pas compte des subwheels
-            echo "<p>temps total rules: ".round($total)."&nbsp;ms</p>\n";
-            echo "</div>\n";
         }
-    }
 
-    public static function outputTotal($liste, $profondeur = 0)
-    {
-        ksort($liste);
-        foreach ($liste as $cause => $duree) {
-            if (is_array($duree)) {
-                Debugger::outputTotal($duree, $profondeur+1);
-            } else {
-                echo "<tr class='prof-$profondeur'>
-                    <td class='number'><b>".intval($duree)."</b>&nbsp;ms</td>
-                    <td class='name'>".spip_htmlspecialchars($cause)."</td>
-                    </tr>\n";
-            }
-        }
-    }
-    
-    /**
-     * Create SubWheel (can be overriden in debug class)
-     * @param TextWheelRuleset $rules
-     * @return TextWheel
-     */
-    protected function &createSubWheel(&$rules)
-    {
-        return new Debugger($rules);
+        return array('total' => $total, 'results' =>$results);
     }
 }
