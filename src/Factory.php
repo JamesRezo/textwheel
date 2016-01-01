@@ -27,6 +27,26 @@ use TextWheel\Replacement\Wheel;
  */
 class Factory
 {
+    /** @var array Condition classes */
+    private static $conditions = array(
+        'if_chars' => 'TextWheel\Condition\CharsCondition',
+        'if_match' => 'TextWheel\Condition\MatchCondition',
+        'if_str' => 'TextWheel\Condition\StrCondition',
+        'if_stri' => 'TextWheel\Condition\StriCondition',
+    );
+
+    /** @var array Replacement classes */
+    private static $replacements = array(
+        'preg' => 'TextWheel\Replacement\PregReplacement',
+        'all' => 'TextWheel\Replacement\AllReplacement',
+        'split' => 'TextWheel\Replacement\SplitReplacement',
+        'str' => 'TextWheel\Replacement\StrReplacement',
+        'preg_cb' => 'TextWheel\Replacement\CallbackPregReplacement',
+        'all_cb' => 'TextWheel\Replacement\CallbackAllReplacement',
+        'split_cb' => 'TextWheel\Replacement\CallbackSplitReplacement',
+        'str_cb' => 'TextWheel\Replacement\CallbackStrReplacement',
+    );
+
     /**
      * Builds the Full Class Name of a Replacement
      *
@@ -37,25 +57,13 @@ class Factory
      */
     private static function buildReplacementClass($type, $is_callback)
     {
-        static $replacements = array(
-            'preg' => 'PregReplacement',
-            'all' => 'AllReplacement',
-            'split' => 'SplitReplacement',
-            'str' => 'StrReplacement',
-            'preg_cb' => 'CallbackPregReplacement',
-            'all_cb' => 'CallbackAllReplacement',
-            'split_cb' => 'CallbackSplitReplacement',
-            'str_cb' => 'CallbackStrReplacement',
-        );
-
-        $replacementClass = 'TextWheel\Replacement\\';
         if ($is_callback) {
             $type = preg_replace('/^(preg|all|split|str)(_cb)?$/', '$1_cb', $type);
         }
 
-        $replacementClass .= array_key_exists($type, $replacements) ?
-            $replacements[$type] :
-            'IdentityReplacement'
+        $replacementClass = array_key_exists($type, self::$replacements) ?
+            self::$replacements[$type] :
+            'TextWheel\Replacement\IdentityReplacement'
         ;
 
         return $replacementClass;
@@ -70,14 +78,7 @@ class Factory
      */
     private static function getConditionList(array $args)
     {
-        static $conditions = array(
-            'if_chars' => 'TextWheel\Condition\CharsCondition',
-            'if_match' => 'TextWheel\Condition\MatchCondition',
-            'if_str' => 'TextWheel\Condition\StrCondition',
-            'if_stri' => 'TextWheel\Condition\StriCondition',
-        );
-
-        return array_intersect_key($args, $conditions);
+        return array_intersect_key($args, self::$conditions);
     }
 
     /**
@@ -163,16 +164,9 @@ class Factory
      */
     public static function createConditions($args)
     {
-        static $conditions = array(
-            'if_chars' => 'TextWheel\Condition\CharsCondition',
-            'if_match' => 'TextWheel\Condition\MatchCondition',
-            'if_str' => 'TextWheel\Condition\StrCondition',
-            'if_stri' => 'TextWheel\Condition\StriCondition',
-        );
-
         $set = array();
 
-        if ($condition = array_intersect_key($args, $conditions)) {
+        if ($condition = self::getConditionList($args)) {
             foreach ($condition as $key => $value) {
                 if ($key == 'if_str') {
                     # optimization: strpos or stripos?
@@ -180,7 +174,7 @@ class Factory
                         $key = 'if_stri';
                     }
                 }
-                $class = $conditions[$key];
+                $class = self::$conditions[$key];
                 $set[$key] = new $class($value);
             }
             ksort($set, SORT_STRING);
