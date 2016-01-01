@@ -27,7 +27,7 @@ use TextWheel\Rule\AbstractRule;
  */
 abstract class Replacement extends AbstractRule implements ReplacementInterface
 {
-    /** @var array|string Replacements */
+    /** @var array|string|Closure Replacements */
     protected $replace;
 
     /** @var array|string Patterns to replace */

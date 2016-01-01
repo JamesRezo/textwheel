@@ -48,6 +48,6 @@ class PregReplacement extends Replacement implements ReplacementInterface
     public function getCompiledCode()
     {
         return '$text = preg_replace(' . var_export($this->match, true) . ', ' .
-            var_export($this->replace, true) . ', $text);';
+            var_export($this->replace, true) . ', $text, -1);';
     }
 }
