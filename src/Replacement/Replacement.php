@@ -103,4 +103,16 @@ abstract class Replacement extends AbstractRule implements ReplacementInterface
 
         return $this->replace($text);
     }
+
+    /**
+     * Gets the match property for debug purpose
+     *
+     * @see TextWheel\Utils\Debugger::process()
+     *
+     * @return string Patterns to replace
+     */
+    public function getMatch()
+    {
+        return is_string($this->match) ? $this->match : implode(', ', $this->match);
+    }
 }

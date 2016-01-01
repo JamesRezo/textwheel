@@ -84,7 +84,7 @@ class Debugger extends TextWheel
         foreach ($this->ruleset as $rule) {
             $name = $rule->getName();
             if (is_int($name)) {
-                $name .= ' '.$rule->match;
+                $name .= ' '.$rule->getMatch();
             }
 
             $this->timer($name);
