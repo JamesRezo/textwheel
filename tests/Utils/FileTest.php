@@ -43,6 +43,7 @@ class FileTest extends TestCase
     public function testBadFormatFound()
     {
         $this->assertEmpty(File::getArray($this->fixtures . 'bad.json'));
+        $this->assertEmpty(File::getArray($this->fixtures . 'bad.yml'));
     }
 
     public function testJsonRules()

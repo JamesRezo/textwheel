@@ -40,12 +40,6 @@ class File
      */
     private static function find($file, $path = '')
     {
-        static $defaultPath;
-
-        if (is_null($defaultPath)) {
-            $defaultPath = __DIR__ . '/../../../../../../wheels/';
-        }
-
         // absolute file path ?
         if (file_exists($file)) {
             return $file;
@@ -54,11 +48,6 @@ class File
         // file embed with texwheels, relative to calling ruleset
         if ($path and file_exists($path . $file)) {
             return $path . $file;
-        }
-
-        // textwheel default path ?
-        if (file_exists($defaultPath . $file)) {
-            return $defaultPath . $file;
         }
 
         return false;

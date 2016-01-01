@@ -1,0 +1,4 @@
+-
+match: "e"
+type: str
+replace: "i"
