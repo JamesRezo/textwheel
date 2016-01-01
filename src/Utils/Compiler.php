@@ -30,10 +30,10 @@ use TextWheel\Replacement\ReplacementInterface;
 class Compiler
 {
     /**
-     * [compileCondition description].
+     * Encapsulates code with a condition.
      *
-     * @param  ConditionInterface $condition [description]
-     * @param  string             $code      [description]
+     * @param  ConditionInterface $condition The Condition to compile
+     * @param  string             $code      The code to encapsulate with the condition
      *
      * @return string                        The compiled code
      */
@@ -43,9 +43,9 @@ class Compiler
     }
 
     /**
-     * [compileReplacement description].
+     * Compiles a Rule.
      *
-     * @param  ReplacementInterface $replacement [description]
+     * @param  ReplacementInterface $replacement The Rule to compile
      *
      * @return string                            The compiled code
      */
@@ -61,9 +61,11 @@ class Compiler
     }
 
     /**
-     * Compile the replacement and conditions in code.
+     * Compiles the replacement and conditions of a Rule in code.
      *
-     * @return string The compiled code
+     * @param  ReplacementInterface $replacement The Rule to compile
+     *
+     * @return string                            The compiled code
      */
     public function compile(ReplacementInterface $replacement)
     {
