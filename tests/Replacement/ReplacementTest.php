@@ -111,6 +111,37 @@ class ReplacementTest extends TestCase
         $this->assertSame('This is a simple text written by myself', $replacement1->apply($this->text));
     }
 
+    public function dataGetMatch()
+    {
+        $data = array();
+
+        $data['match is null'] = array(
+            '',
+            array('type' => 'all', 'replace' => ''),
+        );
+
+        $data['match is a string'] = array(
+            'test',
+            array('type' => 'str', 'match' => 'test', 'replace' => ''),
+        );
+
+        $data['match is an array'] = array(
+            'test1, test2',
+            array('type' => 'str', 'match' => array('test1', 'test2'), 'replace' => ''),
+        );
+
+        return $data;
+    }
+
+    /**
+     * @dataProvider dataGetMatch
+     */
+    public function testGetMatch($expected, $args)
+    {
+        $replacement = $this->getReplacement($args);
+        $this->assertSame($expected, $replacement->getMatch());
+    }
+
     /**
      * @expectedException RuntimeException
      */

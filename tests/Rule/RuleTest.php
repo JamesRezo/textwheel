@@ -78,6 +78,11 @@ class RuleTest extends TestCase
         $this->assertTrue($rule->isDisabled());
     }
 
+    public function testDefaultCompiledCode()
+    {
+        $this->assertEmpty($this->getRule()->getCompiledCode());
+    }
+
     public function dataInvalidArgs()
     {
         $data = array();

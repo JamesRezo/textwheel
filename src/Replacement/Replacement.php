@@ -113,6 +113,6 @@ abstract class Replacement extends AbstractRule implements ReplacementInterface
      */
     public function getMatch()
     {
-        return is_string($this->match) ? $this->match : implode(', ', $this->match);
+        return implode(', ', (array) $this->match);
     }
 }
