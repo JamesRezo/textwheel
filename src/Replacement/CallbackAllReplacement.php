@@ -36,9 +36,9 @@ class CallbackAllReplacement extends Replacement implements ReplacementInterface
      */
     protected function replace($text)
     {
-        $f = $this->replace;
+        $function = $this->replace;
 
-        return call_user_func($f, $text);
+        return call_user_func($function, $text);
     }
 
     public function getCompiledCode()

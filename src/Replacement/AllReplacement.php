@@ -37,11 +37,10 @@ class AllReplacement extends Replacement implements ReplacementInterface
         # special case: replace $0 with $t
         #   replace: "A$0B" will surround the string with A..B
         #   replace: "$0$0" will repeat the string
-        if (strpos($this->replace, '$0') !== false) {
-            $text = str_replace('$0', $text, $this->replace);
-        } else {
-            $text = $this->replace;
-        }
+        $text = (strpos($this->replace, '$0') !== false) ?
+            str_replace('$0', $text, $this->replace) :
+            $this->replace
+        ;
 
         return $text;
     }

@@ -27,21 +27,31 @@ use TextWheel\TextWheel;
  */
 class Debugger extends TextWheel
 {
-    protected $t; #tableaux des temps
-    protected $tu; #tableaux des temps (rules utilises)
-    protected $tnu; #tableaux des temps (rules non utilises)
-    protected $u; #compteur des rules utiles
-    protected $w; #compteur des rules appliques
+    /** @var array times */
+    protected $times;
+
+    /** @var array used rules times */
+    protected $usedRuleTimes;
+
+    /** @var array unused rules times */
+    protected $unusedRuleTimes;
+
+    /** @var array used rules counter */
+    protected $usedRuleCounter;
+
+    /** @var array applied rules counter */
+    protected $appliedRuleCounter;
 
     /**
      * Timer for profiling.
      *
-     * @staticvar int $time
-     * @param string $t
-     * @param bool $raw
+     * @static integer $time
+     * @param  string  $ruleName The name of the Rule
+     * @param  bool    $raw
+     *
      * @return int/strinf
      */
-    protected function timer($t = 'rien', $raw = false)
+    protected function timer($ruleName, $raw = false)
     {
         static $time;
 
@@ -53,11 +63,11 @@ class Debugger extends TextWheel
             $a = end($b);
         } // plus precis !
         $b = reset($b);
-        if (!isset($time[$t])) {
-            $time[$t] = $a + $b;
+        if (!isset($time[$ruleName])) {
+            $time[$ruleName] = $a + $b;
         } else {
-            $p = ($a + $b - $time[$t]) * 1000;
-            unset($time[$t]);
+            $p = ($a + $b - $time[$ruleName]) * 1000;
+            unset($time[$ruleName]);
             if ($raw) {
                 return $p;
             }
@@ -88,33 +98,33 @@ class Debugger extends TextWheel
             }
 
             $this->timer($name);
-            if (!isset($this->u[$name])) {
-                $this->u[$name] = 0;
+            if (!isset($this->usedRuleCounter[$name])) {
+                $this->usedRuleCounter[$name] = 0;
             }
             $before = $text;
             $text = $rule->apply($text);
-            if (!isset($this->w[$name])) {
-                $this->w[$name] = 0;
+            if (!isset($this->appliedRuleCounter[$name])) {
+                $this->appliedRuleCounter[$name] = 0;
             }
-            $this->w[$name] = $this->w[$name] + 1; # nombre de fois appliquee
+            $this->appliedRuleCounter[$name] = $this->appliedRuleCounter[$name] + 1; # nombre de fois appliquee
             
             $v = $this->timer($name, true); # timer
-            if (!isset($this->t[$name])) {
-                $this->t[$name] = 0;
+            if (!isset($this->times[$name])) {
+                $this->times[$name] = 0;
             }
-            $this->t[$name] = $this->t[$name] + $v;
+            $this->times[$name] = $this->times[$name] + $v;
 
             if ($text !== $before) {
-                $this->u[$name] = $this->u[$name] + 1; # nombre de fois utile
-                if (!isset($this->tu[$name])) {
-                    $this->tu[$name] = 0;
+                $this->usedRuleCounter[$name] = $this->usedRuleCounter[$name] + 1; # nombre de fois utile
+                if (!isset($this->usedRuleTimes[$name])) {
+                    $this->usedRuleTimes[$name] = 0;
                 }
-                $this->tu[$name] = $this->tu[$name] + $v;
+                $this->usedRuleTimes[$name] = $this->usedRuleTimes[$name] + $v;
             } else {
-                if (!isset($this->tnu[$name])) {
-                    $this->tnu[$name] = 0;
+                if (!isset($this->unusedRuleTimes[$name])) {
+                    $this->unusedRuleTimes[$name] = 0;
                 }
-                $this->tnu[$name] = $this->tnu[$name] + $v;
+                $this->unusedRuleTimes[$name] = $this->unusedRuleTimes[$name] + $v;
             }
         }
 
@@ -126,21 +136,21 @@ class Debugger extends TextWheel
         $total = 0;
         $results = array();
 
-        if (isset($this->t)) {
-            $time = array_flip(array_map('strval', $this->t));
-            krsort($time);
+        if (isset($this->times)) {
+            $times = array_flip(array_map('strval', $this->times));
+            krsort($times);
 
-            foreach ($time as $t => $r) {
-                $applications = intval($this->u[$r]);
+            foreach ($times as $t => $rule) {
+                $applications = intval($this->usedRuleCounter[$rule]);
                 $total += $t;
                 if (intval($t * 10)) {
-                    $nu = intval($this->w[$r]) - $applications;
+                    $nu = intval($this->appliedRuleCounter[$rule]) - $applications;
                     $profile = array(
                         'time' => number_format(round($t * 10) / 10, 1),
-                        'rule' => $r,
-                        'application' => $applications . '/' . intval($this->w[$r]),
-                        'time/used' => ($applications ? number_format(round($this->tu[$r] / $applications * 100) / 100, 2) : ''),
-                        'time/unused' => ($nu ? number_format(round($this->tnu[$r] / $nu * 100) / 100, 2) : ''),
+                        'rule' => $rule,
+                        'application' => $applications . '/' . intval($this->appliedRuleCounter[$rule]),
+                        'time/used' => ($applications ? number_format(round($this->usedRuleTimes[$rule] / $applications * 100) / 100, 2) : ''),
+                        'time/unused' => ($nu ? number_format(round($this->unusedRuleTimes[$rule] / $nu * 100) / 100, 2) : ''),
                     );
                     $results[] = $profile;
                 }

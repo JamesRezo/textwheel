@@ -35,9 +35,9 @@ class CallbackStrReplacement extends Replacement implements ReplacementInterface
     protected function replace($text)
     {
         if (strpos($text, $this->match) !== false) {
-            if (count($b = explode($this->match, $text)) > 1) {
-                $f = $this->replace;
-                $text = join($f($this->match), $b);
+            if (count($explodedText = explode($this->match, $text)) > 1) {
+                $function = $this->replace;
+                $text = join($function($this->match), $explodedText);
             }
         }
 
@@ -47,8 +47,8 @@ class CallbackStrReplacement extends Replacement implements ReplacementInterface
     public function getCompiledCode()
     {
         return '$text = (strpos($text, ' . var_export($this->match, true) .') !== false) ?
-            ((count($b = explode(' . var_export($this->match, true) .', $text)) > 1) ?
-                $text = join(' . $this->replace .'(' . var_export($this->match, true) .'), $b)
+            ((count($explodedText = explode(' . var_export($this->match, true) .', $text)) > 1) ?
+                $text = join(' . $this->replace .'(' . var_export($this->match, true) .'), $explodedText)
             : $text)
         : $text;';
     }

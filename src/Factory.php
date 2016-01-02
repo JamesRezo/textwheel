@@ -55,9 +55,9 @@ class Factory
      *
      * @return string  Class name
      */
-    private static function buildReplacementClass($type, $is_callback)
+    private static function buildReplacementClass($type, $isCallback)
     {
-        if ($is_callback) {
+        if ($isCallback) {
             $type = preg_replace('/^(preg|all|split|str)(_cb)?$/', '$1_cb', $type);
         }
 

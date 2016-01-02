@@ -77,8 +77,8 @@ class TextWheel
             $this->compile();
         }
 
-        foreach ($this->compiled as $name => $compiled_rule) {
-            $text = $compiled_rule($text);
+        foreach (array_values($this->compiled) as $compiledRule) {
+            $text = $compiledRule($text);
         }
 
         return $text;
