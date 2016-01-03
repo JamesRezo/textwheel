@@ -46,11 +46,4 @@ abstract class Condition implements ConditionInterface
      * @return boolean       true if the rule applies to the input text
      */
     abstract public function appliesTo($text);
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return string       the code encapsulated by the condition test
-     */
-    abstract public function getCompiledCode();
 }

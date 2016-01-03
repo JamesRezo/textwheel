@@ -36,14 +36,4 @@ class CharsCondition extends Condition implements ConditionInterface
     {
         return strpbrk($text, $this->condition) !== false;
     }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return string       the code encapsulated by the condition test
-     */
-    public function getCompiledCode()
-    {
-        return 'strpbrk($text, '.var_export($this->condition, true).') !== false';
-    }
 }

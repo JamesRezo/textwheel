@@ -49,7 +49,7 @@ function dataCallbackReplace()
         array('match' => '/(\w+)/', 'replace' => 'return str_rot13($matches[1]);', 'create_replace' => true)
     );
 
-    /*$data['is_wheel test'] = array(
+    $data['is_wheel test'] = array(
         '(This) (is) (a) (simple) (test) (written) (by) (myself)',
         array('is_wheel' => true, 'match' => '/(\w+)/', 'replace' => array(array(
             'type' => 'all',
@@ -76,7 +76,7 @@ function dataCallbackReplace()
                 'priority' => -1
             ),
         )),
-    );*/
+    );
 
     return $data;
 }

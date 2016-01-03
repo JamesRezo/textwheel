@@ -38,7 +38,7 @@ class TextWheel
     public function __construct($ruleset = array())
     {
         if (is_string($ruleset)) {
-            $ruleset = $this->loadFile($ruleset);
+            $ruleset = File::getArray($ruleset);
         }
 
         if (!is_array($ruleset) or empty($ruleset)) {
@@ -96,27 +96,7 @@ class TextWheel
         $compiler = new Compiler();
 
         foreach ($this->ruleset as $rule) {
-            $this->compiled[$rule->getName()] = create_function('$text', $compiler->compile($rule));
+            $this->compiled[$rule->getName()] = $compiler->compile($rule);
         }
-    }
-
-    /**
-     * Load a file describing rules.
-     *
-     * @param string $file
-     *
-     * @return array
-     *
-     * @SuppressWarnings(PHPMD.StaticAccess)
-     */
-    private function loadFile($file)
-    {
-        try {
-            $rules = File::getArray($file);
-        } catch (Exception $e) {
-            printf("Unable to parse the content of file '%s'", $file);
-        }
-
-        return $rules;
     }
 }

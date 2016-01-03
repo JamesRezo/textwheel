@@ -29,52 +29,10 @@ use TextWheel\Replacement\ReplacementInterface;
  */
 class Compiler
 {
-    /**
-     * Encapsulates code with a condition.
-     *
-     * @param  ConditionInterface $condition The Condition to compile
-     * @param  string             $code      The code to encapsulate with the condition
-     *
-     * @return string                        The compiled code
-     */
-    protected function compileCondition(ConditionInterface $condition, $code = '')
-    {
-        return 'if (' . $condition->getCompiledCode() . ') { ' . $code . ' }';
-    }
-
-    /**
-     * Compiles a Rule.
-     *
-     * @param  ReplacementInterface $replacement The Rule to compile
-     *
-     * @return string                            The compiled code
-     */
-    protected function compileReplacement(ReplacementInterface $replacement)
-    {
-        $code = $replacement->getCompiledCode();
-
-        foreach ($replacement->getConditions() as $condition) {
-            $code = $this->compileCondition($condition, $code);
-        }
-
-        return $code;
-    }
-
-    /**
-     * Compiles the replacement and conditions of a Rule in code.
-     *
-     * @param  ReplacementInterface $replacement The Rule to compile
-     *
-     * @return string                            The compiled code
-     */
     public function compile(ReplacementInterface $replacement)
     {
-        $code = '';
-
-        if (!$replacement->isDisabled()) {
-            $code = $this->compileReplacement($replacement) . ' ';
-        }
-
-        return $code . 'return $text;';
+        return function ($text) use ($replacement) {
+            return $replacement->apply($text);
+        };
     }
 }

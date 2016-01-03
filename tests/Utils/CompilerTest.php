@@ -48,8 +48,7 @@ class CompilerTest extends TestCase
 
         $compiler = new Compiler();
 
-        $code = $compiler->compile($this->getReplacement($args));
-        $test = create_function('$text', $code);
+        $test = $compiler->compile($this->getReplacement($args));
 
         $this->assertSame($expected, $test($this->text));
     }

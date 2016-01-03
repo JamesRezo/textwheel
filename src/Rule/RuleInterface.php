@@ -54,18 +54,4 @@ interface RuleInterface
      * @return void
      */
     public function setDisabled();
-
-    /**
-     * Gets the compiled version of the Rule.
-     *
-     * @return string The compiled Rule
-     */
-    public function getCompiledCode();
-
-    /**
-     * Gets the optional conditions of the Rule.
-     *
-     * @return array The optional conditions of the Rule
-     */
-    public function getConditions();
 }

@@ -36,14 +36,4 @@ class StriCondition extends Condition implements ConditionInterface
     {
         return stripos($text, $this->condition) !== false;
     }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return string       the code encapsulated by the condition test
-     */
-    public function getCompiledCode()
-    {
-        return 'stripos($text, '.var_export($this->condition, true).') !== false';
-    }
 }
