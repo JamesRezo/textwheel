@@ -32,6 +32,8 @@ class TextWheel
      * Base TextWheel Contructor.
      *
      * @param string|array $ruleset a file or an array of rules
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function __construct($ruleset = array())
     {
@@ -104,6 +106,8 @@ class TextWheel
      * @param string $file
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     private function loadFile($file)
     {

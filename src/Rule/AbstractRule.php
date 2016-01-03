@@ -44,6 +44,8 @@ abstract class AbstractRule implements RuleInterface
      *
      * @param string $name The name of the rule
      * @param array  $args Properties of the rule
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function __construct($name, array $args)
     {
