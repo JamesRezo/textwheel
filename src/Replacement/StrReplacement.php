@@ -28,6 +28,18 @@ class StrReplacement extends Replacement implements ReplacementInterface
     /** @var boolean use strtr as replacement function if true */
     protected $strtr = false;
 
+    private function isStrtrEligible($property)
+    {
+        if (is_array($property)) {
+            $count = array_map('strlen', $property);
+            if (1 == count($count) and 1 == reset($count)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * {@inheritdoc}
      *
@@ -36,16 +48,7 @@ class StrReplacement extends Replacement implements ReplacementInterface
     protected function initialize()
     {
         // test if quicker strtr usable
-        if (is_array($this->match) and is_array($this->replace)
-            and $c = array_map('strlen', $this->match)
-            and $c = array_unique($c)
-            and count($c) == 1
-            and reset($c) == 1
-            and $c = array_map('strlen', $this->replace)
-            and $c = array_unique($c)
-            and count($c) == 1
-            and reset($c) == 1
-        ) {
+        if ($this->isStrtrEligible($this->match) and $this->isStrtrEligible($this->replace)) {
             $this->match = implode('', $this->match);
             $this->replace = implode('', $this->replace);
             $this->strtr = true;
