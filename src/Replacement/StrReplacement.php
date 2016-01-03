@@ -28,10 +28,17 @@ class StrReplacement extends Replacement implements ReplacementInterface
     /** @var boolean use strtr as replacement function if true */
     protected $strtr = false;
 
+    /**
+     * Tells if a property is eligible to call strtr() instead of str_replace().
+     *
+     * @param  string|array  $property match or replace property
+     *
+     * @return boolean                 true if the property is an array of single characters
+     */
     private function isStrtrEligible($property)
     {
         if (is_array($property)) {
-            $count = array_map('strlen', $property);
+            $count = array_unique(array_map('strlen', $property));
             if (1 == count($count) and 1 == reset($count)) {
                 return true;
             }

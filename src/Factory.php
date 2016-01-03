@@ -51,7 +51,7 @@ class Factory
      * Builds the Full Class Name of a Replacement
      *
      * @param  string  $type         The type of the rule
-     * @param  boolean $is_callback  true if replace is a callback function
+     * @param  boolean $isCallback   true if replace is a callback function
      *
      * @return string  Class name
      */
@@ -89,7 +89,7 @@ class Factory
      *
      * @return array               Rule properties
      */
-    public static function buildWheeledReplacement(array $replacement, $name = '')
+    private static function buildWheeledReplacement(array $replacement, $name = '')
     {
         $wheel = new Wheel($name, $replacement);
         foreach ($replacement['replace'] as $subname => $subwheel) {
