@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Utils\Parser;
@@ -28,9 +27,9 @@ class Json implements ParserInterface
     /**
      * Parsing following the JSON format.
      *
-     * @param  string $content JSON formatted rules
+     * @param string $content JSON formatted rules
      *
-     * @return array           rules as array
+     * @return array rules as array
      */
     public static function parse($content = '')
     {

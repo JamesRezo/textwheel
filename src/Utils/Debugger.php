@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Utils;
@@ -46,8 +45,9 @@ class Debugger extends TextWheel
      * Timer for profiling.
      *
      * @static integer $time
-     * @param  string  $ruleName The name of the Rule
-     * @param  bool    $raw
+     *
+     * @param string $ruleName The name of the Rule
+     * @param bool   $raw
      *
      * @return int/strinf
      */
@@ -74,16 +74,16 @@ class Debugger extends TextWheel
             if ($p < 1000) {
                 $s = '';
             } else {
-                $s = sprintf("%d ", $x = floor($p/1000));
+                $s = sprintf('%d ', $x = floor($p / 1000));
                 $p -= ($x * 1000);
             }
 
-            return $s . sprintf("%.3f ms", $p);
+            return $s.sprintf('%.3f ms', $p);
         }
     }
 
     /**
-     * Apply all rules of RuleSet to a text
+     * Apply all rules of RuleSet to a text.
      *
      * @param string $text
      *
@@ -106,16 +106,16 @@ class Debugger extends TextWheel
             if (!isset($this->appliedRuleCounter[$name])) {
                 $this->appliedRuleCounter[$name] = 0;
             }
-            $this->appliedRuleCounter[$name] = $this->appliedRuleCounter[$name] + 1; # nombre de fois appliquee
-            
-            $v = $this->timer($name, true); # timer
+            $this->appliedRuleCounter[$name] = $this->appliedRuleCounter[$name] + 1; // nombre de fois appliquee
+
+            $v = $this->timer($name, true); // timer
             if (!isset($this->times[$name])) {
                 $this->times[$name] = 0;
             }
             $this->times[$name] = $this->times[$name] + $v;
 
             if ($text !== $before) {
-                $this->usedRuleCounter[$name] = $this->usedRuleCounter[$name] + 1; # nombre de fois utile
+                $this->usedRuleCounter[$name] = $this->usedRuleCounter[$name] + 1; // nombre de fois utile
                 if (!isset($this->usedRuleTimes[$name])) {
                     $this->usedRuleTimes[$name] = 0;
                 }
@@ -148,7 +148,7 @@ class Debugger extends TextWheel
                     $profile = array(
                         'time' => number_format(round($t * 10) / 10, 1),
                         'rule' => $rule,
-                        'application' => $applications . '/' . intval($this->appliedRuleCounter[$rule]),
+                        'application' => $applications.'/'.intval($this->appliedRuleCounter[$rule]),
                         'time/used' => ($applications ? number_format(round($this->usedRuleTimes[$rule] / $applications * 100) / 100, 2) : ''),
                         'time/unused' => ($nu ? number_format(round($this->unusedRuleTimes[$rule] / $nu * 100) / 100, 2) : ''),
                     );
@@ -157,6 +157,6 @@ class Debugger extends TextWheel
             }
         }
 
-        return array('total' => $total, 'results' =>$results);
+        return array('total' => $total, 'results' => $results);
     }
 }

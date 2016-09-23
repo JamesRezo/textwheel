@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Replacement;
@@ -28,9 +27,9 @@ class IdentityReplacement extends Replacement implements ReplacementInterface
     /**
      * {@inheritdoc}
      *
-     * @param  string $text The input text
+     * @param string $text The input text
      *
-     * @return string       The output text
+     * @return string The output text
      */
     protected function replace($text)
     {
@@ -39,8 +38,6 @@ class IdentityReplacement extends Replacement implements ReplacementInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @return void
      */
     protected function initialize()
     {

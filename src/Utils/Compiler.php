@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,17 +15,15 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Utils;
 
 use TextWheel\TextWheel;
-use TextWheel\Condition\ConditionInterface;
 use TextWheel\Replacement\ReplacementInterface;
 
 /**
- * Rule Compiler
+ * Rule Compiler.
  */
 class Compiler
 {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Replacement;
@@ -28,16 +27,16 @@ class CallbackStrReplacement extends Replacement implements ReplacementInterface
     /**
      * Callback string replacement.
      *
-     * @param  String $text The input text
+     * @param string $text The input text
      *
-     * @return string       The output text
+     * @return string The output text
      */
     protected function replace($text)
     {
         if (strpos($text, $this->match) !== false) {
             if (count($explodedText = explode($this->match, $text)) > 1) {
                 $function = $this->replace;
-                $text = join($function($this->match), $explodedText);
+                $text = implode($function($this->match), $explodedText);
             }
         }
 

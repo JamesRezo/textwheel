@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,13 +15,11 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Utils\Parser;
 
 use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
  * Parser interface.
@@ -31,9 +29,9 @@ interface ParserInterface
     /**
      * Parsing following the extension format.
      *
-     * @param  string $content formatted rules
+     * @param string $content formatted rules
      *
-     * @return array           rules as array
+     * @return array rules as array
      */
     public static function parse($content = '');
 }

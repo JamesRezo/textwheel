@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Replacement;
@@ -30,7 +29,7 @@ class Wheel extends AbstractRule implements ReplacementInterface
     /** @var Replacement[] List of replacements or wheels */
     private $replacements;
 
-    /** @var boolean true if the list is sorted by priority */
+    /** @var bool true if the list is sorted by priority */
     private $sorted = true;
 
     /**
@@ -62,11 +61,11 @@ class Wheel extends AbstractRule implements ReplacementInterface
     /**
      * {@inheritdoc}
      *
-     * @param  string $text The input text
+     * @param string $text The input text
      *
-     * @throws Exception    In case the replacement cannot compute
+     * @throws Exception In case the replacement cannot compute
      *
-     * @return string       The output text
+     * @return string The output text
      */
     public function apply($text)
     {

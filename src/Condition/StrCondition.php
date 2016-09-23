@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Condition;
@@ -28,9 +27,9 @@ class StrCondition extends Condition implements ConditionInterface
     /**
      * {@inheritdoc}
      *
-     * @param  string  $text a text input
+     * @param string $text a text input
      *
-     * @return boolean       true if the rule applies to the input text
+     * @return bool true if the rule applies to the input text
      */
     public function appliesTo($text)
     {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,12 +15,9 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Utils;
-
-use TextWheel\Utils\Parser;
 
 /**
  * File utilities.
@@ -46,13 +43,13 @@ class File
         }
 
         // file embed with texwheels, relative to calling ruleset
-        if ($path and file_exists($path . $file)) {
-            return $path . $file;
+        if ($path and file_exists($path.$file)) {
+            return $path.$file;
         }
 
         return false;
     }
-    
+
     private static function getParser($file)
     {
         static $types = array(
@@ -82,8 +79,8 @@ class File
                 $rules = array();
             }
 
-            #recursive rules
-            $path = dirname($file) . '/';
+            //recursive rules
+            $path = dirname($file).'/';
             foreach ($rules as $name => $rule) {
                 $file = $rule['replace'];
                 if (is_string($file) and (isset($rule['is_wheel']) and $rule['is_wheel'])) {

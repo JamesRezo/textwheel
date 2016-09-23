@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Replacement;
@@ -35,7 +34,7 @@ class CallbackSplitReplacement extends Replacement implements ReplacementInterfa
     /**
      * {@inheritdoc}
      *
-     * @param array  $args Properties of the rule
+     * @param array $args Properties of the rule
      */
     public function __construct($name, array $args)
     {
@@ -47,29 +46,27 @@ class CallbackSplitReplacement extends Replacement implements ReplacementInterfa
 
         $this->match = array(
             $this->match,
-            is_null($this->glue) ? $this->match : $this->glue
+            is_null($this->glue) ? $this->match : $this->glue,
         );
     }
 
     /**
      * Callback split replacement.
      *
-     * @param  String $text The input text
+     * @param string $text The input text
      *
-     * @return string       The output text
+     * @return string The output text
      */
     protected function replace($text)
     {
         $splitText = explode($this->match[0], $text);
-        $text = join($this->match[1], array_map($this->replace, $splitText));
+        $text = implode($this->match[1], array_map($this->replace, $splitText));
 
         return $text;
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @return void
      */
     protected function initialize()
     {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Replacement;
@@ -56,8 +55,6 @@ abstract class Replacement extends AbstractRule implements ReplacementInterface
 
     /**
      * Sets custom properties for the rule.
-     *
-     * @return void
      */
     protected function initialize()
     {
@@ -66,11 +63,11 @@ abstract class Replacement extends AbstractRule implements ReplacementInterface
     /**
      * The effective replacement.
      *
-     * @param  string $text The input text
+     * @param string $text The input text
      *
-     * @throws Exception    In case the replacement cannot compute
+     * @throws Exception In case the replacement cannot compute
      *
-     * @return string       The output text
+     * @return string The output text
      */
     abstract protected function replace($text);
 
@@ -87,11 +84,11 @@ abstract class Replacement extends AbstractRule implements ReplacementInterface
     /**
      * {@inheritdoc}
      *
-     * @param  string $text The input text
+     * @param string $text The input text
      *
-     * @throws Exception    In case the replacement cannot work
+     * @throws Exception In case the replacement cannot work
      *
-     * @return string       The output text
+     * @return string The output text
      */
     public function apply($text)
     {
@@ -105,7 +102,7 @@ abstract class Replacement extends AbstractRule implements ReplacementInterface
     }
 
     /**
-     * Gets the match property for debug purpose
+     * Gets the match property for debug purpose.
      *
      * @see TextWheel\Utils\Debugger::process()
      *

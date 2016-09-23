@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Replacement;
@@ -35,11 +34,11 @@ interface ReplacementInterface
     /**
      * The conditional application of replacement.
      *
-     * @param  string $text     The input text
+     * @param string $text The input text
      *
      * @throws RuntimeException In case the replacement cannot compute
      *
-     * @return string           The output text
+     * @return string The output text
      */
     public function apply($text);
 }

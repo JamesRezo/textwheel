@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Utils\Parser;
@@ -31,9 +30,9 @@ class Yaml implements ParserInterface
     /**
      * Parsing following the YAML format.
      *
-     * @param  string $content YAML formatted rules
+     * @param string $content YAML formatted rules
      *
-     * @return array           rules as array
+     * @return array rules as array
      */
     public static function parse($content = '')
     {

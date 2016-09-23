@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Replacement;
@@ -28,15 +27,15 @@ class AllReplacement extends Replacement implements ReplacementInterface
     /**
      * {@inheritdoc}
      *
-     * @param  string $text The input text
+     * @param string $text The input text
      *
-     * @return string       The output text
+     * @return string The output text
      */
     protected function replace($text)
     {
-        # special case: replace $0 with $t
-        #   replace: "A$0B" will surround the string with A..B
-        #   replace: "$0$0" will repeat the string
+        // special case: replace $0 with $t
+        //   replace: "A$0B" will surround the string with A..B
+        //   replace: "$0$0" will repeat the string
         $text = (strpos($this->replace, '$0') !== false) ?
             str_replace('$0', $text, $this->replace) :
             $this->replace

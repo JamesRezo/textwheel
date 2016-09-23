@@ -13,20 +13,20 @@
 
 namespace TextWheel;
 
-use TextWheel\Factory;
 use TextWheel\Utils\File;
 use TextWheel\Utils\Compiler;
+use TextWheel\Replacement\Wheel;
 
 /**
  * The Main object of the libray.
  */
 class TextWheel
 {
-    /** @var ReplacmentInterface[] The Rules */
-    protected $ruleset = array();
+    /** @var Wheel The Rules */
+    protected $wheel;
 
-    /** @var Callable[] Store for compiled code */
-    protected $compiled = array();
+    /** @var Compiler Store for compiled code */
+    protected $compiler;
 
     /**
      * Base TextWheel Contructor.
@@ -37,66 +37,54 @@ class TextWheel
      */
     public function __construct($ruleset = array())
     {
+        $this->wheel = new Wheel('__root__', array());
+        $this->compiler = new Compiler();
+
+        $this->addRules($ruleset);
+    }
+
+    public function addRules($ruleset = array())
+    {
         if (is_string($ruleset)) {
             $ruleset = File::getArray($ruleset);
         }
 
-        if (!is_array($ruleset) or empty($ruleset)) {
-            throw new \InvalidArgumentException("Error Processing Request", 1);
+        if (!is_array($ruleset)) {
+            throw new \InvalidArgumentException('Error Processing Request', 1);
         }
 
-        foreach ($ruleset as $name => $rules) {
-            $this->ruleset[] = Factory::createReplacement($rules, $name);
+        foreach ($ruleset as $name => $rule) {
+            $this->wheel->add(Factory::createReplacement($rule, $name));
         }
     }
 
     /**
      * Process all rules of RuleSet to a text.
      *
-     * @param  string $text The input text
+     * @param string $text The input text
      *
-     * @return string       The output text
+     * @return string The output text
      */
     public function process($text)
     {
-        foreach ($this->ruleset as $rule) {
-            $text = $rule->apply($text);
-        }
-
-        return $text;
+        return $this->wheel->apply($text);
     }
 
     /**
      * Process all rules using compiled anonymous functions.
      *
-     * @param  string $text The input text
+     * @param string $text The input text
      *
-     * @return string       The output text
+     * @return string The output text
      */
     public function text($text)
     {
-        if (empty($this->compiled)) {
-            $this->compile();
+        static $compiledWheel = null;
+
+        if (is_null($compiledWheel)) {
+            $compiledWheel = $this->compiler->compile($this->wheel);
         }
 
-        foreach (array_values($this->compiled) as $compiledRule) {
-            $text = $compiledRule($text);
-        }
-
-        return $text;
-    }
-
-    /**
-     * Compile all Rules as an array of anonymous functions.
-     *
-     * @return void
-     */
-    protected function compile()
-    {
-        $compiler = new Compiler();
-
-        foreach ($this->ruleset as $rule) {
-            $this->compiled[$rule->getName()] = $compiler->compile($rule);
-        }
+        return $compiledWheel($text);
     }
 }

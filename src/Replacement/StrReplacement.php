@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Replacement;
@@ -25,15 +24,15 @@ namespace TextWheel\Replacement;
  */
 class StrReplacement extends Replacement implements ReplacementInterface
 {
-    /** @var boolean use strtr as replacement function if true */
+    /** @var bool use strtr as replacement function if true */
     protected $strtr = false;
 
     /**
      * Tells if a property is eligible to call strtr() instead of str_replace().
      *
-     * @param  string|array  $property match or replace property
+     * @param string|array $property match or replace property
      *
-     * @return boolean                 true if the property is an array of single characters
+     * @return bool true if the property is an array of single characters
      */
     private function isStrtrEligible($property)
     {
@@ -49,8 +48,6 @@ class StrReplacement extends Replacement implements ReplacementInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @return void
      */
     protected function initialize()
     {
@@ -65,7 +62,7 @@ class StrReplacement extends Replacement implements ReplacementInterface
     /**
      * split replacement : invalid.
      *
-     * @param  String $text The input text
+     * @param string $text The input text
      *
      * @throws Exception Need a Callback
      */
@@ -85,9 +82,9 @@ class StrReplacement extends Replacement implements ReplacementInterface
     /**
      * Fast Static string replacement one char to one char.
      *
-     * @param  string $text The input text
+     * @param string $text The input text
      *
-     * @return string       The output text
+     * @return string The output text
      */
     protected function replaceStrtr($text)
     {

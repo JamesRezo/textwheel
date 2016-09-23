@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Rule;
@@ -27,13 +26,13 @@ use TextWheel\Factory;
  */
 abstract class AbstractRule implements RuleInterface
 {
-    /** @var string  The name of the rule */
+    /** @var string The name of the rule */
     private $name = '';
 
-    /** @var integer Rule priority (rules are applied in ascending order) */
+    /** @var int Rule priority (rules are applied in ascending order) */
     protected $priority = 0;
 
-    /** @var boolean true if the rule is disabled */
+    /** @var bool true if the rule is disabled */
     protected $disabled = false;
 
     /** @var ConditionInterface[] Conditions to apply optionaly to the rule */
@@ -79,7 +78,7 @@ abstract class AbstractRule implements RuleInterface
     /**
      * {@inheritdoc}
      *
-     * @return integer The priority of the rule
+     * @return int The priority of the rule
      *
      * @see RuleSet::sort()
      */
@@ -91,7 +90,7 @@ abstract class AbstractRule implements RuleInterface
     /**
      * {@inheritdoc}
      *
-     * @return boolean true if the rule is disabled
+     * @return bool true if the rule is disabled
      */
     public function isDisabled()
     {

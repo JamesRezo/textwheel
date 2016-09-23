@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel;
@@ -48,12 +47,12 @@ class Factory
     );
 
     /**
-     * Builds the Full Class Name of a Replacement
+     * Builds the Full Class Name of a Replacement.
      *
-     * @param  string  $type         The type of the rule
-     * @param  boolean $isCallback   true if replace is a callback function
+     * @param string $type       The type of the rule
+     * @param bool   $isCallback true if replace is a callback function
      *
-     * @return string  Class name
+     * @return string Class name
      */
     private static function buildReplacementClass($type, $isCallback)
     {
@@ -72,9 +71,9 @@ class Factory
     /**
      * Gets a list of Condition set by properties.
      *
-     * @param  array $args Properties of the rule
+     * @param array $args Properties of the rule
      *
-     * @return array       Condition properties of the rule
+     * @return array Condition properties of the rule
      */
     private static function getConditionList(array $args)
     {
@@ -84,10 +83,10 @@ class Factory
     /**
      * Builds a Wheeled Replacement.
      *
-     * @param  array  $replacement Rule properties
-     * @param  string $name        Optional name of the wheel
+     * @param array  $replacement Rule properties
+     * @param string $name        Optional name of the wheel
      *
-     * @return array               Rule properties
+     * @return array Rule properties
      */
     private static function buildWheeledReplacement(array $replacement, $name = '')
     {
@@ -100,6 +99,7 @@ class Factory
             $matches = ('preg' !== $replacement['type'] or !isset($replacement['match'])) ?
                 $matches :
                 $matches[intval($replacement['pick_match'])];
+
             return $wheel->apply($matches);
         };
 
@@ -149,7 +149,7 @@ class Factory
         if (!isset($replacement['replace'])) {
             $replacement['type'] = '';
         }
- 
+
         $replacementClass = self::buildReplacementClass($replacement['type'], $replacement['is_callback']);
 
         return new $replacementClass($name, $replacement);
@@ -169,7 +169,7 @@ class Factory
         if ($condition = self::getConditionList($args)) {
             foreach ($condition as $key => $value) {
                 if ($key == 'if_str') {
-                    # optimization: strpos or stripos?
+                    // optimization: strpos or stripos?
                     if (strtolower($value) !== strtoupper($value)) {
                         $key = 'if_stri';
                     }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Replacement;
@@ -28,7 +27,7 @@ class SplitReplacement extends Replacement implements ReplacementInterface
     /**
      * split replacement : invalid.
      *
-     * @param  String $text The input text
+     * @param string $text The input text
      *
      * @throws RuntimeException Need a Callback
      */

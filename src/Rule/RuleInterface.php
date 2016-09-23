@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TextWheel 0.1
+ * TextWheel 0.1.
  *
  * let's reinvent the wheel one last time
  *
@@ -15,7 +15,6 @@
  * Documentation & http://zzz.rezo.net/-TextWheel-
  *
  * Usage: $wheel = new TextWheel(); echo $wheel->text($text);
- *
  */
 
 namespace TextWheel\Rule;
@@ -35,7 +34,7 @@ interface RuleInterface
     /**
      * Gets the priority of the rule.
      *
-     * @return integer The priority of the rule
+     * @return int The priority of the rule
      *
      * @see Wheel::sort()
      */
@@ -44,14 +43,12 @@ interface RuleInterface
     /**
      * Tells if the rule is disabled.
      *
-     * @return boolean true if the rule is disabled
+     * @return bool true if the rule is disabled
      */
     public function isDisabled();
 
     /**
      * Disable the rule.
-     *
-     * @return void
      */
     public function setDisabled();
 }
